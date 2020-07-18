@@ -7,4 +7,5 @@ install:
 # command to run tests
 script:
   - pip install flask_api
+  - pip install flask-sqlalchemy psycopg2 flask-migrate
   - pytest

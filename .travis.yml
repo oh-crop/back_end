@@ -6,7 +6,6 @@ install:
 script:
 - pip install flask_api
 - pip install flask-sqlalchemy psycopg2 flask-migrate
-- alembic upgrade head
 - pytest
 deploy:
   provider: heroku

@@ -45,7 +45,7 @@ pandas==1.0.5
 paramiko==2.7.1
 pathspec==0.5.9
 pluggy==0.13.1
-protobuf==3.12.3
+protobuf==3.5.1
 psycopg2==2.8.5
 py==1.9.0
 pycparser==2.20

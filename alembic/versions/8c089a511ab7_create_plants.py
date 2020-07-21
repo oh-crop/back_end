@@ -19,7 +19,7 @@ depends_on = None
 def upgrade():
     op.create_table(
     'plants',
-        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('id', sa.Integer, primary_key=True, autoincrement=True),
         sa.Column('name', sa.String(50)),
         sa.Column('plant_type', sa.String(50)),
         sa.Column('image', sa.Unicode(255)),

@@ -22,7 +22,7 @@ class EndpointTestCase(unittest.TestCase):
 
     def test_api_can_get_a_dummy_endpoint(self):
         """Test API can get a dummy string (GET request)."""
-        res = self.client().get('/')
+        res = self.client().get('/api/v1/')
         self.assertEqual(res.status_code, 200)
         self.assertIn("I need to go take a shower so I can't tell if I'm crying or not.", str(res.data))
 

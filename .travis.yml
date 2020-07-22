@@ -4,9 +4,9 @@ python:
 install:
 - pip install -r requirements.txt
 before_script:
-  - psql -c 'create database travis_ci_test;' -U postgres
+- psql -c 'create database oh_crop_test;' -U postgres
 services:
-  - postgresql
+- postgresql
 script:
 - pip install flask_api
 - pip install flask-sqlalchemy psycopg2 flask-migrate

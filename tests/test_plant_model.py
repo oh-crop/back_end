@@ -19,9 +19,11 @@ class PlantModelTestCase(unittest.TestCase):
         self.app_context.pop()
 
     def test_it_has_a_name(self):
-        plant = Plant(name='Gerald')
+        plant = Plant(name='Gerald', plant_type='Celery')
         self.assertTrue(plant.name == 'Gerald')
         self.assertFalse(plant.name == 'Fred')
+        self.assertTrue(plant.plant_type == 'Celery')
+        self.assertTrue(plant.plant_type != 'Corn')
 
 if __name__ == "__main__":
     unittest.main()

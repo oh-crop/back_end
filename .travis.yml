@@ -3,6 +3,8 @@ python:
 - '3.8'
 install:
 - pip install -r requirements.txt
+addons: # ensure that Travis-CI provisions a DB for our test:
+  postgresql: '9.5'
 script:
 - pip install flask_api
 - pip install flask-sqlalchemy psycopg2 flask-migrate

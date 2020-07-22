@@ -2,6 +2,7 @@ import unittest
 import os
 import json
 from app import create_app, db
+from app.models import Plant
 
 class EndpointTestCase(unittest.TestCase):
     """This class represents the test case"""
@@ -10,6 +11,14 @@ class EndpointTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app(config_name="testing")
         self.client = self.app.test_client
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
 
     def test_api_can_get_a_dummy_endpoint(self):
         """Test API can get a dummy string (GET request)."""

@@ -33,6 +33,8 @@ class EndpointTestCase(unittest.TestCase):
         db.session.commit()
         res = self.client().get('/api/v1/plants/{}'.format(jimmy.id))
         self.assertEqual(res.status_code, 200)
+        self.assertNotIn('Dan', str(res.data))
+        self.assertIn('Jimothy', str(res.data))
 
 # Execute test
 if __name__ == "__main__":

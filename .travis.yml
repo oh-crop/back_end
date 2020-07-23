@@ -8,7 +8,7 @@ before_script:
 services:
 - postgresql
 script:
-- pip install flask_apiß
+- pip install flask_api
 - pip install flask-sqlalchemy psycopg2 flask-migrate
 - pytest
 deploy:

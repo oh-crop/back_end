@@ -11,11 +11,17 @@ def endpoint():
 
 @api.route('/plants/<int:id>')
 def get_plant(id):
-    plant = Plant.query.filter_by(id=id).first()
+    plant = Plant.query.get_or_404(id)
     result = {
                 'id': plant.id,
                 'name': plant.name,
-                'plant_type': plant.plant_type
+                'plant_type': plant.plant_type,
+                'plant_image': plant.image,
+                'lighting': plant.lighting,
+                'days_between_water': plant.water_frequency,
+                'days_to_harvest_from_seed': plant.harvest_time,
+                'root_depth_in': plant.root_depth,
+                'annual?': plant.annual
                 }
     response = jsonify(result)
     response.status_code = 200
@@ -38,9 +44,8 @@ def all_plants():
 
 @api.route('/plants/meet')
 def random_plant():
-    from random import randint
-    id = randint(1, 24)
-    plant = Plant.query.filter_by(id=id).first()
+    id = Plant.random_id()
+    plant = Plant.query.get_or_404(id)
     result = {
                 'id': plant.id,
                 'name': plant.name,

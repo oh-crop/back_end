@@ -42,11 +42,11 @@ class EndpointTestCase(unittest.TestCase):
         dan = Plant(name='Dan',plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual=False)
         db.session.add_all([jimmy, agatha, dan])
         db.session.commit()
-        res = self.client().get('/api/v1/plants/search/{}'.format('?q=tomato'))
+        res = self.client().get('/api/v1/plants/search?q=tomato')
         self.assertEqual(res.status_code, 200)
-        # self.assertNotIn('Dan', str(res.data))
-        # self.assertIn('Jimothy', str(res.data))
-        # self.assertIn('Agatha', str(res.data))
+        self.assertNotIn('Dan', str(res.data))
+        self.assertIn('Jimothy', str(res.data))
+        self.assertIn('Agatha', str(res.data))
 
 # Execute test
 if __name__ == "__main__":

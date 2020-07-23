@@ -2,8 +2,13 @@ from flask import jsonify, request, current_app, url_for
 from . import api
 from ..models import Plant
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from app import db
 
+some_engine = create_engine('postgresql://localhost/oh_crop')
+Session = sessionmaker(bind=some_engine)
+session = Session()
 
 @api.route('/')
 def endpoint():
@@ -58,5 +63,28 @@ def random_plant():
                 'annual?': plant.annual
                 }
     response = jsonify(result)
+    response.status_code = 200
+    return response
+
+@api.route('/plants/search')
+def search_plants():
+    search = request.args['q']
+    plants = session.query(Plant).filter(Plant.plant_type.ilike('%{}%'.format(search))).all()
+    results = []
+
+    for plant in plants:
+        obj = {
+            'id': plant.id,
+            'name': plant.name,
+            'plant_type': plant.plant_type,
+            'plant_image': plant.image,
+            'lighting': plant.lighting,
+            'days_between_water': plant.water_frequency,
+            'days_to_harvest_from_seed': plant.harvest_time,
+            'root_depth_in': plant.root_depth,
+            'annual?': plant.annual
+        }
+        results.append(obj)
+    response = jsonify(results)
     response.status_code = 200
     return response

@@ -48,6 +48,17 @@ class EndpointTestCase(unittest.TestCase):
         self.assertIn(jimmy.plant_type, str(res.data))
         self.assertIn(agatha.plant_type, str(res.data))
 
+    def test_api_can_add_plant_to_garden(self):
+        jimmy = Plant(name='Jimothy',plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual=False)
+        agatha = Plant(name='Agatha',plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual=False)
+        dan = Plant(name='Dan',plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual=False)
+        db.session.add_all([jimmy, agatha, dan])
+        db.session.commit()
+
+        res = self.client().post('/garden?plant_id=1')
+        self.assertEqual(res.status_code, 201)
+        self.assertIn(jimmy.name, str(res.data))
+
 # Execute test
 if __name__ == "__main__":
     unittest.main()

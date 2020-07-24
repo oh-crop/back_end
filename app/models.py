@@ -21,11 +21,11 @@ class Plant(db.Model):
         from random import randint
         num = randint(1, 24)
         return num
-        
+
 class Garden(db.Model):
     __tablename__ = 'gardens'
     id = db.Column(db.Integer, primary_key=True)
-    plant_id = db.Column(db.Integer, ForeignKey('plants.id'))
+    plant_id = db.Column(db.Integer, db.ForeignKey('plants.id'))
     plant_name = db.Column(db.String(60))
     last_watered = db.Column(db.DateTime)
     date_added = db.Column(db.DateTime, default=datetime.now())

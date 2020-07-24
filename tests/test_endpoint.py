@@ -22,9 +22,17 @@ class EndpointTestCase(unittest.TestCase):
 
     def test_api_can_get_a_dummy_endpoint(self):
         """Test API can get a dummy string (GET request)."""
-        res = self.client().get('/')
+        res = self.client().get('/api/v1/')
         self.assertEqual(res.status_code, 200)
         self.assertIn("I need to go take a shower so I can't tell if I'm crying or not.", str(res.data))
+
+    def test_api_can_return_a_plant_by_id(self):
+        jimmy = Plant(name='Jimothy',plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual=False)
+        dan = Plant(name='Dan',plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual=False)
+        db.session.add_all([jimmy, dan])
+        db.session.commit()
+        res = self.client().get('/api/v1/plants/{}'.format(jimmy.id))
+        self.assertEqual(res.status_code, 200)
 
 # Execute test
 if __name__ == "__main__":

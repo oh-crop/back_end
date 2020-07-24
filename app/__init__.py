@@ -20,8 +20,7 @@ def create_app(config_name):
     db.init_app(app)
     CORS(app)
 
-    @app.route('/', methods=['GET'])
-    def endpoint():
-        return "I need to go take a shower so I can't tell if I'm crying or not."
+    from .api import api as api_blueprint
+    app.register_blueprint(api_blueprint, url_prefix='/api/v1')
 
     return app

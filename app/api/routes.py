@@ -2,13 +2,7 @@ from flask import jsonify, request, current_app, url_for
 from . import api
 from ..models import Plant
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from app import db
-
-some_engine = create_engine('postgresql://localhost/oh_crop')
-Session = sessionmaker(bind=some_engine)
-session = Session()
 
 @api.route('/')
 def endpoint():
@@ -69,7 +63,7 @@ def random_plant():
 @api.route('/plants/search')
 def search_plants():
     search = request.args['q']
-    plants = session.query(Plant).filter(Plant.plant_type.ilike('%{}%'.format(search))).all()
+    plants = db.session.query(Plant).filter(Plant.plant_type.ilike('%{}%'.format(search))).all()
     results = []
 
     for plant in plants:

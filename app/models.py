@@ -17,6 +17,11 @@ class Plant(db.Model):
     def in_garden(self):
         Garden.query.filter_by(plant_id=self.id).first()
 
+    def random_id():
+        from random import randint
+        num = randint(1, 24)
+        return num
+        
 class Garden(db.Model):
     __tablename__ = 'gardens'
     id = db.Column(db.Integer, primary_key=True)

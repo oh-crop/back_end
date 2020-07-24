@@ -1,4 +1,5 @@
 from . import db
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 class Plant(db.Model):
@@ -13,8 +14,13 @@ class Plant(db.Model):
     root_depth = db.Column(db.Integer)
     annual = db.Column(db.Boolean)
 
-    def get_all():
-        return Plant.query.all()
+    def in_garden(self):
+        Garden.query.filter_by(plant_id=self.id).first()
 
-    def get_one(id):
-        return Plant.query.filter_by(id=id).first()
+class Garden(db.Model):
+    __tablename__ = 'gardens'
+    id = db.Column(db.Integer, primary_key=True)
+    plant_id = db.Column(db.Integer, ForeignKey('plants.id'))
+    plant_name = db.Column(db.String(60))
+    last_watered = db.Column(db.DateTime)
+    date_added = db.Column(db.DateTime, default=datetime.now())

@@ -33,8 +33,8 @@ class EndpointTestCase(unittest.TestCase):
         db.session.commit()
         res = self.client().get('/api/v1/plants/{}'.format(jimmy.id))
         self.assertEqual(res.status_code, 200)
-        self.assertNotIn('Dan', str(res.data))
-        self.assertIn('Jimothy', str(res.data))
+        self.assertNotIn(dan.plant_type, str(res.data))
+        self.assertIn(jimmy.plant_type, str(res.data))
 
     def test_api_can_search_for_a_plant_type(self):
         jimmy = Plant(name='Jimothy',plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual=False)
@@ -44,9 +44,9 @@ class EndpointTestCase(unittest.TestCase):
         db.session.commit()
         res = self.client().get('/api/v1/plants/search?q=tomato')
         self.assertEqual(res.status_code, 200)
-        self.assertNotIn('Dan', str(res.data))
-        self.assertIn('Jimothy', str(res.data))
-        self.assertIn('Agatha', str(res.data))
+        self.assertNotIn(dan.plant_type, str(res.data))
+        self.assertIn(jimmy.plant_type, str(res.data))
+        self.assertIn(agatha.plant_type, str(res.data))
 
 # Execute test
 if __name__ == "__main__":

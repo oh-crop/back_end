@@ -13,7 +13,6 @@ def get_plant(id):
     plant = Plant.query.get_or_404(id)
     result = {
                 'id': plant.id,
-                'name': plant.name,
                 'plant_type': plant.plant_type,
                 'plant_image': plant.image,
                 'lighting': plant.lighting,
@@ -47,14 +46,8 @@ def random_plant():
     plant = Plant.query.get_or_404(id)
     result = {
                 'id': plant.id,
-                'name': plant.name,
                 'plant_type': plant.plant_type,
-                'plant_image': plant.image,
-                'lighting': plant.lighting,
-                'days_between_water': plant.water_frequency,
-                'days_to_harvest_from_seed': plant.harvest_time,
-                'root_depth_in': plant.root_depth,
-                'annual?': plant.annual
+                'plant_image': plant.image
                 }
     response = jsonify(result)
     response.status_code = 200
@@ -68,15 +61,8 @@ def search_plants():
 
     for plant in plants:
         obj = {
-            'id': plant.id,
-            'name': plant.name,
             'plant_type': plant.plant_type,
             'plant_image': plant.image,
-            'lighting': plant.lighting,
-            'days_between_water': plant.water_frequency,
-            'days_to_harvest_from_seed': plant.harvest_time,
-            'root_depth_in': plant.root_depth,
-            'annual?': plant.annual
         }
         results.append(obj)
     response = jsonify(results)

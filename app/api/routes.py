@@ -3,6 +3,7 @@ from . import api
 from ..models import Plant
 from flask_sqlalchemy import SQLAlchemy
 from app import db
+import code
 
 
 @api.route('/')

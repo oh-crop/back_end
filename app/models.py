@@ -1,5 +1,4 @@
 from . import db
-from flask_sqlalchemy import SQLAlchemy
 
 class Plant(db.Model):
     __tablename__ = 'plants'
@@ -13,8 +12,7 @@ class Plant(db.Model):
     root_depth = db.Column(db.Integer)
     annual = db.Column(db.Boolean)
 
-    def get_all():
-        return Plant.query.all()
-
-    def get_one(id):
-        return Plant.query.filter_by(id=id).first()
+    def random_id():
+        from random import randint
+        num = randint(1, 24)
+        return num

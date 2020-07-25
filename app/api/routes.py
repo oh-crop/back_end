@@ -32,11 +32,16 @@ def get_plant(id):
 def add_to_garden():
     plant_id = request.args['plant_id']
     plant_name = request.args['plant_name']
-
     plant = Plant.query.filter_by(id=plant_id,).first()
-    days_to_harvest = (datetime.now() + timedelta(days=plant.harvest_time))
 
-    garden = Garden(plant_id=plant_id,plant_name=plant_name)
+    if plant.harvest_time:
+        harvest_date = (datetime.now() + timedelta(days=plant.harvest_time))
+        days_to_harvest = harvest_date.strftime("%a, %B %d %Y")
+    else:
+        days_to_harvest = None
+
+
+    garden = Garden(plant_id=plant_id,plant_name=plant_name, harvest_date=days_to_harvest)
     db.session.add_all([garden])
     db.session.commit()
 
@@ -44,6 +49,7 @@ def add_to_garden():
     result = {
         'plant_id': garden.plant_id,
         'plant_name': plant_name,
+        'harvest_date':garden.harvest_date
     }
     response = jsonify(result)
     response.status_code = 201

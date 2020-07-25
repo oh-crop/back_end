@@ -1,8 +1,11 @@
 from flask import jsonify, request, current_app, url_for
 from . import api
-from ..models import Plant
+from ..models import Plant, Garden
 from flask_sqlalchemy import SQLAlchemy
 from app import db
+import code
+from datetime import datetime
+from datetime import timedelta
 
 @api.route('/')
 def endpoint():
@@ -23,6 +26,27 @@ def get_plant(id):
                 }
     response = jsonify(result)
     response.status_code = 200
+    return response
+
+@api.route('/garden', methods=['POST'])
+def add_to_garden():
+    plant_id = request.args['plant_id']
+    plant_name = request.args['plant_name']
+
+    plant = Plant.query.filter_by(id=plant_id,).first()
+    days_to_harvest = (datetime.now() + timedelta(days=plant.harvest_time))
+
+    garden = Garden(plant_id=plant_id,plant_name=plant_name)
+    db.session.add_all([garden])
+    db.session.commit()
+
+
+    result = {
+        'plant_id': garden.plant_id,
+        'plant_name': plant_name,
+    }
+    response = jsonify(result)
+    response.status_code = 201
     return response
 
 @api.route('/plants/')

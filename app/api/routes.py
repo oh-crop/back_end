@@ -106,16 +106,13 @@ def add_to_garden():
 @api.route('/garden')
 def get_garden():
     garden = Garden.query.all()[0]
-    gardenplant =  garden.gardenplants[0]
-    # gardenplant.plant
+    gardenplants =  garden.gardenplants
 
-    code.interact(local=dict(globals(), **locals()))
-    plants = garden.plants
     results = []
 
-    for plant in plants:
+    for plant in gardenplants:
         obj = {
-            'plant_id': plant.plant_id,
+            'id': plant.id,
             'plant_name': plant.plant_name,
         }
         results.append(obj)

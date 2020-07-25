@@ -138,6 +138,8 @@ def update_watering():
     results = {
         'id': garden_plant.id,
         'name': garden_plant.plant_name,
+        'plant_type': garden_plant.plant.plant_type,
+        'water_frequency': freq,
         'last_watered': last_water,
         'next_water': next_water
     }

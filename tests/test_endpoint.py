@@ -3,6 +3,8 @@ import os
 import json
 from app import create_app, db
 from app.models import Plant
+from datetime import datetime
+from datetime import timedelta
 
 class EndpointTestCase(unittest.TestCase):
     """This class represents the test case"""
@@ -55,9 +57,23 @@ class EndpointTestCase(unittest.TestCase):
         db.session.add_all([zeke, agatha, dan])
         db.session.commit()
 
+        harvest_date = (datetime.now() + timedelta(days=50))
+        parsed_harvest_date = harvest_date.strftime("%a, %d %b %Y")
         res = self.client().post('/api/v1/garden?plant_id=1&plant_name=Ezekiel')
         self.assertEqual(res.status_code, 201)
         self.assertIn("Ezekiel", str(res.data))
+        self.assertIn("{} 00:00:00 GMT".format(parsed_harvest_date), str(res.data))
+
+    def test_api_can_add_plant_to_garden_with_no_harvest_date(self):
+        zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
+        dan = Plant(plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
+        db.session.add_all([zeke, dan])
+        db.session.commit()
+
+        res = self.client().post('/api/v1/garden?plant_id={}&plant_name=Marjorie'.format(dan.id))
+        self.assertEqual(res.status_code, 201)
+        self.assertIn("Marjorie", str(res.data))
+        self.assertIn("null", str(res.data))
 
 # Execute test
 if __name__ == "__main__":

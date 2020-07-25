@@ -67,8 +67,9 @@ Step 3:
 
 Here are some end points and request response examples to get you started.
 
-## GET Endpoints:
+### GET Endpoints:
 __Motivational message__
+
 This is the home page endpoint with some sample text to ensure that the app is working as expected
 
 ```
@@ -76,13 +77,41 @@ oh-crop-be.herokuapp.com/api/v1/
 ```
 
 __All Plants__
+
 This endpoint returns all plant object in the database
 
 ```
-oh-crop-be.herokuapp.com/api/v1/plants
+Request:
+https://oh-crop-be.herokuapp.com/api/v1/plants/
+
+Response:
+{
+    "id": 1,
+    "image": "https://skitterphoto.com/photos/skitterphoto-1901-default.jpg"
+},
+{
+    "id": 2,
+    "image": "https://cdn.pixabay.com/photo/2019/05/29/19/04/tomatoes-4238247_960_720.jpg"
+},
+{
+    "id": 3,
+    "image": "https://live.staticflickr.com/2591/3816942238_e669d597f7_w.jpg"
+},
+{
+    "id": 4,
+    "image": "https://storage.needpix.com/rsynced_images/jalapeno-2053130_1280.jpg"
+},
+{
+    "id": 5,
+    "image": "https://storage.needpix.com/rsynced_images/dill-2826179_1280.jpg"
+},
+{
+    "id": 6,
+...
 ```
 
-__Meet a random plant__
+__Meet a Random Plant__
+
 This endpoint returns a random plant from the database
 
 ```
@@ -94,9 +123,11 @@ Response:
     "id": 15,
     "plant_image": "https://c1.peakpx.com/wallpaper/736/669/216/appetite-avacado-avo-avocado-wallpaper-preview.jpg",
     "plant_type": "Avocado"
+}
 ```
 
-__Get plant by ID (Plant Info)__
+__Get Plant by ID (Plant Info)__
+
 This endpoint requires an ID to be passed in and it will return information about that plant
 ```
 Request:
@@ -118,6 +149,9 @@ Response:
 Note: Add a plant ID to the end. In the example above the plants ID is `2`
 
 __Plant Search__
+
+This endpoint requires a query parameter of `q` and will return any plants that even partially match the search term provided. This search is case insensitive.
+
 ```
 Request:
 https://oh-crop-be.herokuapp.com/api/v1/plants/search?q=tomato
@@ -142,11 +176,40 @@ Response:
 ]
 ```
 
-Note: will need to pass query params: {q: <search term>}
+Note: will need to pass query params: {q: (search term)}
 
 Note: Search term is not case sensitive and will search within all plant types
 
-## POST Endpoints:
+__Plants in Garden__
+
+This endpoint returns all plants you have in your garden, you can use the POST endpoint below to add a plant to your garden
+
+```
+Request:
+https://oh-crop-be.herokuapp.com/api/v1/garden
+
+Response:
+[
+  {
+    "id": 32,
+    "plant_name": "Regina"
+  },
+  {
+    "id": 33,
+    "plant_name": "Hillary"
+  },
+  {
+    "id": 34,
+    "plant_name": "Sebastian"
+  },
+  {
+    "id": 35,
+    "plant_name": "Arnold"
+  }
+]
+```
+
+### POST Endpoints:
 __Add Plant to Garden__
 ```
 Request:

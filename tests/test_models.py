@@ -2,9 +2,9 @@ import unittest
 import os
 import json
 from app import create_app, db
-from app.models import Plant
+from app.models import Plant, Garden
 
-class PlantModelTestCase(unittest.TestCase):
+class ModelTestCase(unittest.TestCase):
 
     def setUp(self):
         self.app = create_app(config_name="testing")
@@ -19,12 +19,15 @@ class PlantModelTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-    def test_it_has_a_name(self):
-        plant = Plant(name='Gerald', plant_type='Celery')
-        self.assertTrue(plant.name == 'Gerald')
-        self.assertFalse(plant.name == 'Fred')
+    def test_it_has_a_plant_type(self):
+        plant = Plant(plant_type='Celery')
         self.assertTrue(plant.plant_type == 'Celery')
         self.assertTrue(plant.plant_type != 'Corn')
+
+    def test_it_has_a_plant_type(self):
+        plant = Plant(plant_type='Celery')
+        garden = Garden(plant_id=plant.id)
+        self.assertTrue(garden.plant_id == plant.id)
 
 if __name__ == "__main__":
     unittest.main()

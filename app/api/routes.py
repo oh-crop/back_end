@@ -102,7 +102,7 @@ def add_to_garden():
     response.status_code = 201
     return response
 
-# @api.route('/garden/<int:id>')
-# def get_garden(id):
-#     code.interact(local=dict(globals(), **locals()))
-#     return 'Garden!!!'
+@api.route('/garden/<int:id>')
+def get_garden(id):
+    # code.interact(local=dict(globals(), **locals()))
+    return 'Garden!!!'

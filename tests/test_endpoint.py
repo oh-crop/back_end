@@ -77,9 +77,9 @@ class EndpointTestCase(unittest.TestCase):
         self.assertIn("Marjorie", str(res.data))
         self.assertIn("null", str(res.data))
 
-    # def test_api_can_return_all_plants_in_garden(self):
-    #     res = self.client().get('/api/v1/garden/1')
-    #     self.assertEqual(res.status_code, 200)
+    def test_api_can_return_all_plants_in_garden(self):
+        res = self.client().get('/api/v1/garden/1')
+        self.assertEqual(res.status_code, 200)
 
 
 # Execute test

@@ -13,6 +13,9 @@ class Plant(db.Model):
     root_depth = db.Column(db.Integer)
     annual = db.Column(db.String(50))
 
+    def get_all():
+        return Plant.query.all()
+
     def in_garden(self):
         Garden.query.filter_by(plant_id=self.id).first()
 

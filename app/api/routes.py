@@ -1,6 +1,6 @@
 from flask import jsonify, request, current_app, url_for
 from . import api
-from ..models import Plant, Garden
+from ..models import Plant, Garden, GardenPlant
 from flask_sqlalchemy import SQLAlchemy
 from app import db
 import code
@@ -28,32 +28,6 @@ def get_plant(id):
     response.status_code = 200
     return response
 
-@api.route('/garden', methods=['POST'])
-def add_to_garden():
-    plant_id = request.args['plant_id']
-    plant_name = request.args['plant_name']
-    plant = Plant.query.filter_by(id=plant_id,).first()
-
-    if plant.harvest_time:
-        harvest_date = (datetime.now() + timedelta(days=plant.harvest_time))
-        days_to_harvest = harvest_date.strftime("%a, %B %d %Y")
-    else:
-        days_to_harvest = None
-
-
-    garden = Garden(plant_id=plant_id,plant_name=plant_name, harvest_date=days_to_harvest)
-    db.session.add_all([garden])
-    db.session.commit()
-
-
-    result = {
-        'plant_id': garden.plant_id,
-        'plant_name': plant_name,
-        'harvest_date':garden.harvest_date
-    }
-    response = jsonify(result)
-    response.status_code = 201
-    return response
 
 @api.route('/plants/')
 def all_plants():
@@ -94,6 +68,52 @@ def search_plants():
             'id': plant.id,
             'plant_type': plant.plant_type,
             'plant_image': plant.image,
+        }
+        results.append(obj)
+    response = jsonify(results)
+    response.status_code = 200
+    return response
+
+@api.route('/garden', methods=['POST'])
+def add_to_garden():
+    plant_id = request.args['plant_id']
+    plant_name = request.args['plant_name']
+    plant = Plant.query.filter_by(id=plant_id,).first()
+    garden = Garden.query.all()[0]
+
+    if plant.harvest_time:
+        harvest_date = (datetime.now() + timedelta(days=plant.harvest_time))
+        days_to_harvest = harvest_date.strftime("%a, %B %d %Y")
+    else:
+        days_to_harvest = None
+
+
+    garden_plant = GardenPlant(plant_id=plant_id,plant_name=plant_name, harvest_date=days_to_harvest,garden_id=garden.id)
+    db.session.add_all([garden_plant])
+    db.session.commit()
+
+
+    result = {
+    'plant_id': garden_plant.plant_id,
+    'garden_id':garden_plant.garden_id,
+    'plant_name': plant_name,
+    'harvest_date':garden_plant.harvest_date
+    }
+    response = jsonify(result)
+    response.status_code = 201
+    return response
+
+@api.route('/garden')
+def get_garden():
+    garden = Garden.query.all()[0]
+    gardenplants =  garden.gardenplants
+
+    results = []
+
+    for plant in gardenplants:
+        obj = {
+            'id': plant.id,
+            'plant_name': plant.plant_name,
         }
         results.append(obj)
     response = jsonify(results)

@@ -2,7 +2,7 @@ import unittest
 import os
 import json
 from app import create_app, db
-from app.models import Plant, Garden
+from app.models import Plant, GardenPlant
 
 class ModelTestCase(unittest.TestCase):
 
@@ -26,8 +26,8 @@ class ModelTestCase(unittest.TestCase):
 
     def test_it_has_a_plant_type(self):
         plant = Plant(plant_type='Celery')
-        garden = Garden(plant_id=plant.id)
-        self.assertTrue(garden.plant_id == plant.id)
+        garden_plant = GardenPlant(plant_id=plant.id)
+        self.assertTrue(garden_plant.plant_id == plant.id)
 
 if __name__ == "__main__":
     unittest.main()

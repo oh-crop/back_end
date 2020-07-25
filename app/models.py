@@ -1,6 +1,7 @@
 from . import db
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship, backref
 
 class Plant(db.Model):
     __tablename__ = 'plants'
@@ -13,6 +14,8 @@ class Plant(db.Model):
     root_depth = db.Column(db.Integer)
     annual = db.Column(db.String(50))
 
+    gardens = relationship("Garden", secondary="garden_plants")
+
     def get_all():
         return Plant.query.all()
 
@@ -24,11 +27,21 @@ class Plant(db.Model):
         num = randint(1, 24)
         return num
 
-class Garden(db.Model):
-    __tablename__ = 'gardens'
+class GardenPlant(db.Model):
+    __tablename__ = 'garden_plants'
     id = db.Column(db.Integer, primary_key=True)
     plant_id = db.Column(db.Integer, db.ForeignKey('plants.id'))
+    garden_id = db.Column(db.Integer, db.ForeignKey('gardens.id'))
     plant_name = db.Column(db.String(60))
     last_watered = db.Column(db.DateTime)
     date_added = db.Column(db.DateTime, default=datetime.now())
     harvest_date = db.Column(db.DateTime)
+    
+    plant = relationship("Plant")
+
+class Garden(db.Model):
+    __tablename__ = 'gardens'
+    id = db.Column(db.Integer, primary_key=True)
+
+    plants = relationship("Plant", secondary="garden_plants")
+    gardenplants = relationship("GardenPlant")

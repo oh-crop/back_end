@@ -57,7 +57,6 @@ def all_plants():
     for plant in plants:
         obj = {
             'id': plant.id,
-            'name': plant.name,
             'image': plant.image
         }
         results.append(obj)

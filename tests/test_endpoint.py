@@ -27,8 +27,8 @@ class EndpointTestCase(unittest.TestCase):
         self.assertIn("I need to go take a shower so I can't tell if I'm crying or not.", str(res.data))
 
     def test_api_can_return_a_plant_by_id(self):
-        jimmy = Plant(name='Jimothy',plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual=False)
-        dan = Plant(name='Dan',plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual=False)
+        jimmy = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
+        dan = Plant(plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
         db.session.add_all([jimmy, dan])
         db.session.commit()
         res = self.client().get('/api/v1/plants/{}'.format(jimmy.id))
@@ -37,9 +37,9 @@ class EndpointTestCase(unittest.TestCase):
         self.assertIn(jimmy.plant_type, str(res.data))
 
     def test_api_can_search_for_a_plant_type(self):
-        jimmy = Plant(name='Jimothy',plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual=False)
-        agatha = Plant(name='Agatha',plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual=False)
-        dan = Plant(name='Dan',plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual=False)
+        jimmy = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
+        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
+        dan = Plant(plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
         db.session.add_all([jimmy, agatha, dan])
         db.session.commit()
         res = self.client().get('/api/v1/plants/search?q=tomato')
@@ -49,9 +49,9 @@ class EndpointTestCase(unittest.TestCase):
         self.assertIn(agatha.plant_type, str(res.data))
 
     def test_api_can_add_plant_to_garden(self):
-        zeke = Plant(name=None,plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual=False)
-        agatha = Plant(name='Agatha',plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual=False)
-        dan = Plant(name='Dan',plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual=False)
+        zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
+        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
+        dan = Plant(plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
         db.session.add_all([zeke, agatha, dan])
         db.session.commit()
 

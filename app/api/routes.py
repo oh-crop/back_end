@@ -31,28 +31,21 @@ def get_plant(id):
 @api.route('/garden', methods=['POST'])
 def add_to_garden():
     plant_id = request.args['plant_id']
-    # plant_name = request.args['plant_name']
+    plant_name = request.args['plant_name']
 
-    # plant = Plant.query.filter_by(id=plant_id).first()
+    plant = Plant.query.filter_by(id=plant_id,).first()
+    days_to_harvest = (datetime.now() + timedelta(days=plant.harvest_time))
 
-    garden = Garden(plant_id=plant_id)
-    code.interact(local=dict(globals(), **locals()))
-    garden.save()
+    garden = Garden(plant_id=plant_id,plant_name=plant_name)
+    db.session.add_all([garden])
+    db.session.commit()
 
-    # days_to_harvest = (datetime.now() + timedelta(days=1))
 
-    response = jsonify({
-        'id': garden.id,
-        'plant_id': plant_id,
-        # 'plant_name': plant_name,
-        # 'last_watered': datetime.now(),
-        # 'plant_type': plant.plant_type,
-        # 'lighting': plant.lighting,
-        # 'root_depth_inches': plant.root_depth,
-        # 'days_between_water': plant.water_frequency,
-        # 'annual?': plant.annual,
-        # 'days_to_harvest':days_to_harvest
-    })
+    result = {
+        'plant_id': garden.plant_id,
+        'plant_name': plant_name,
+    }
+    response = jsonify(result)
     response.status_code = 201
     return response
 

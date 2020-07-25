@@ -22,7 +22,7 @@ def get_plant(id):
                 'days_between_water': plant.water_frequency,
                 'days_to_harvest_from_seed': plant.harvest_time,
                 'root_depth_in': plant.root_depth,
-                'annual': plant.annual
+                'lifecycle': plant.annual
                 }
     response = jsonify(result)
     response.status_code = 200

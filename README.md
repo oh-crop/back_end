@@ -104,7 +104,7 @@ https://oh-crop-be.herokuapp.com/api/v1/plants/2
 
 Response:
 {
-    "annual": "Perennial",
+    "lifecycle": "Perennial",
     "days_between_water": 3,
     "days_to_harvest_from_seed": 50,
     "id": 2,

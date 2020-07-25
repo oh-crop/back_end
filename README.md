@@ -32,3 +32,9 @@ Note: will need to pass query params: {q: <search term>}
 Note: Search term is not case sensitive and will search within all plant types
 
 ##Post Endpoints:
+__Add Plant to Garden__
+```
+oh-crop-be.herokuapp.com/api/v1/garden?plant_id=1&plant_name=Ezekiel
+```
+
+Note: will need to pass query params for the ID of the plant being added being added and the unique name the user will assign to the plant: {plant_id: 1, plant_name: Ezekiel}

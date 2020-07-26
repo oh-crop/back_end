@@ -156,9 +156,12 @@ def update_watering():
 @api.route('garden/plants/<int:id>')
 def get_gardenplant(id):
     gardenplant = GardenPlant.query.get_or_404(id)
-    today = datetime.now()
-    harvest = gardenplant.harvest_date
-    remaining = (harvest - today).days
+    if gardenplant.plant.harvest_time:
+        today = datetime.now()
+        harvest = gardenplant.harvest_date
+        remaining = (harvest - today).days
+    else:
+        remaining = None
 
     result = {
         'gardenplant_id': gardenplant.id,

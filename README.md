@@ -73,7 +73,7 @@ __Motivational message__
 This is the home page endpoint with some sample text to ensure that the app is working as expected
 
 ```
-oh-crop-be.herokuapp.com/api/v1/
+https://oh-crop-be.herokuapp.com/api/v1/
 ```
 
 __All Plants__
@@ -135,14 +135,14 @@ https://oh-crop-be.herokuapp.com/api/v1/plants/2
 
 Response:
 {
-    "lifecycle": "Perennial",
-    "days_between_water": 3,
-    "days_to_harvest_from_seed": 50,
-    "id": 2,
-    "lighting": "Full Sun",
-    "plant_image": "https://cdn.pixabay.com/photo/2019/05/29/19/04/tomatoes-4238247_960_720.jpg",
-    "plant_type": "Cherry Tomato",
-    "root_depth_in": 12
+  "days_between_water": 3,
+  "days_to_harvest_from_seed": 50,
+  "id": 2,
+  "lifecycle": "Perennial",
+  "lighting": "Full Sun",
+  "plant_image": "https://cdn.pixabay.com/photo/2019/05/29/19/04/tomatoes-4238247_960_720.jpg",
+  "plant_type": "Cherry Tomato",
+  "root_depth_in": 12
 }
 ```
 
@@ -215,16 +215,19 @@ This endpoint returns a show page for a plant that is in your garden.  It has sp
 
 ```
 Request:
-https://oh-crop-be.herokuapp.com/api/v1/garden/plants/4
+https://oh-crop-be.herokuapp.com/api/v1/garden/plants/5
 
 Response:
 {
-  "date_added": "Sat, 25 Jul 2020 19:10:52 GMT",
-  "gardenplant_id": 4,
-  "harvest_date": "Sun, 13 Sep 2020 00:00:00 GMT",
-  "last_watered": null,
+  "date_added": "Sun, July 26, 2020",
+  "days_until_harvest": 74,
+  "days_until_next_water": 3,
+  "gardenplant_id": 5,
+  "harvest_date": "Fri, October 09, 2020",
+  "image": "https://live.staticflickr.com/2591/3816942238_e669d597f7_w.jpg",
+  "last_watered": "Sun, July 26, 2020",
   "plant_name": "Melissa",
-  "plant_type": "Pumpkin"
+  "plant_type": "Roma Tomato"
 }
 ```
 
@@ -238,32 +241,33 @@ https://oh-crop-be.herokuapp.com/api/v1/garden?plant_id=4&plant_name=Terry
 
 Response:
 {
-    "garden_id": 1,
-    "garden_plant_id": 54,
-    "harvest_date": "Sat, 24 Oct 2020 00:00:00 GMT",
-    "plant_id": 4,
-    "plant_name": "Terry"
+  "garden_id": 1,
+  "garden_plant_id": 10,
+  "harvest_date": "Sat, October 24, 2020",
+  "plant_id": 4,
+  "plant_name": "Terry"
 }
 ```
 
 Note: will need to pass query params for the ID of the plant being added being added and the unique name the user will assign to the plant: {plant_id: 4, plant_name: Terry}
 
+### PUT Endpoints
 __Water Your Plant__
 
 This endpoint allows you to water your plant. It changes the `last_watered` to today and tells you when you will need to water next
 
 ```
 Request:
-https://oh-crop-be.herokuapp.com/api/v1/garden/water?garden_plant_id=53
+https://oh-crop-be.herokuapp.com/api/v1/garden/water?garden_plant_id=10
 
 Response:
 {
-    "id": 53,
-    "last_watered": "Sun, July 26 2020",
-    "name": "Terry",
-    "next_water": "Tue, July 28 2020",
-    "plant_type": "Jalapeno Peppers",
-    "water_frequency": 2
+  "id": 10,
+  "last_watered": "Sun, July 26, 2020",
+  "name": "Terry",
+  "next_water": "Tue, July 28, 2020",
+  "plant_type": "Jalapeno Peppers",
+  "water_frequency": 2
 }
 ```
 

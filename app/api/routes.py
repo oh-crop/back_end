@@ -116,17 +116,25 @@ def get_garden():
     garden = Garden.query.all()[0]
     gardenplants =  garden.gardenplants
 
-    results = []
-
-    for plant in gardenplants:
-        obj = {
-            'id': plant.id,
-            'plant_name': plant.plant_name,
+    if len(gardenplants) == 0:
+        results = {
+            'info': 'You have no plants in your garden'
         }
-        results.append(obj)
-    response = jsonify(results)
-    response.status_code = 200
-    return response
+        response = jsonify(results)
+        response.status_code = 200
+        return response
+    else:
+        results = []
+
+        for plant in gardenplants:
+            obj = {
+                'id': plant.id,
+                'plant_name': plant.plant_name,
+            }
+            results.append(obj)
+        response = jsonify(results)
+        response.status_code = 200
+        return response
 
 @api.route('/garden/water', methods=['POST'])
 def update_watering():
@@ -153,25 +161,39 @@ def update_watering():
     response.status_code = 201
     return response
 
-@api.route('garden/plants/<int:id>')
+@api.route('garden/plants/<int:id>', methods=['GET', 'DELETE'])
 def get_gardenplant(id):
-    gardenplant = GardenPlant.query.get_or_404(id)
-    if gardenplant.plant.harvest_time:
-        today = datetime.now()
-        harvest = gardenplant.harvest_date
-        remaining = (harvest - today).days
-    else:
-        remaining = None
+    if request.method == 'GET':
+        gardenplant = GardenPlant.query.get_or_404(id)
+        if gardenplant.plant.harvest_time:
+            today = datetime.now()
+            harvest = gardenplant.harvest_date
+            remaining = (harvest - today).days
+        else:
+            remaining = None
 
-    result = {
-        'gardenplant_id': gardenplant.id,
-        'plant_name': gardenplant.plant_name,
-        'date_added': gardenplant.date_added,
-        'last_watered': gardenplant.last_watered,
-        'harvest_date': gardenplant.harvest_date,
-        'days_until_harvest': remaining,
-        'plant_type': gardenplant.plant.plant_type
-    }
-    response = jsonify(result)
-    response.status_code = 200
-    return response
+        result = {
+            'gardenplant_id': gardenplant.id,
+            'plant_name': gardenplant.plant_name,
+            'date_added': gardenplant.date_added,
+            'last_watered': gardenplant.last_watered,
+            'harvest_date': gardenplant.harvest_date,
+            'days_until_harvest': remaining,
+            'plant_type': gardenplant.plant.plant_type
+        }
+        response = jsonify(result)
+        response.status_code = 200
+        return response
+
+    else:
+        request.method == 'DELETE'
+        gardenplant = GardenPlant.query.get_or_404(id)
+        result = {
+            'gardenplant_id': gardenplant.id,
+            'plant_name': gardenplant.plant_name,
+        }
+        db.session.delete(gardenplant)
+        db.session.commit()
+        response = jsonify(result)
+        response.status_code = 202
+        return response

@@ -54,6 +54,19 @@ class EndpointTestCase(unittest.TestCase):
         self.assertIn(jimmy.plant_type, str(res.data))
         self.assertIn(agatha.plant_type, str(res.data))
 
+    def test_api_seach_has_a_sad_path(self):
+        jimmy = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
+        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
+        dan = Plant(plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
+        db.session.add_all([jimmy, agatha, dan])
+        db.session.commit()
+        res = self.client().get('/api/v1/plants/search?q=elephant')
+        self.assertEqual(res.status_code, 200)
+        self.assertNotIn(dan.plant_type, str(res.data))
+        self.assertNotIn(jimmy.plant_type, str(res.data))
+        self.assertNotIn(agatha.plant_type, str(res.data))
+        self.assertIn("We did not find any plants called elephant.  Maybe try a different search term?", str(res.data))
+
     def test_api_can_add_plant_to_garden(self):
         garden = Garden(id=1)
         zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")

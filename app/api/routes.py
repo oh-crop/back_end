@@ -61,15 +61,21 @@ def random_plant():
 def search_plants():
     search = request.args['q']
     plants = db.session.query(Plant).filter(Plant.plant_type.ilike('%{}%'.format(search))).all()
-    results = []
 
-    for plant in plants:
-        obj = {
-            'id': plant.id,
-            'plant_type': plant.plant_type,
-            'plant_image': plant.image,
+    if len(plants) == 0:
+        results = {
+            'image': 'error image',
+            'info': 'We did not find any plants called {}.  Maybe try a different search term?'.format(search)
         }
-        results.append(obj)
+    else:
+        results = []
+        for plant in plants:
+            obj = {
+                'id': plant.id,
+                'plant_type': plant.plant_type,
+                'plant_image': plant.image,
+            }
+            results.append(obj)
     response = jsonify(results)
     response.status_code = 200
     return response

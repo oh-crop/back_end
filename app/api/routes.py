@@ -156,15 +156,19 @@ def update_watering():
 @api.route('garden/plants/<int:id>')
 def get_gardenplant(id):
     gardenplant = GardenPlant.query.get_or_404(id)
+    today = datetime.now()
+    harvest = gardenplant.harvest_date
+    remaining = (harvest - today).days
+
     result = {
         'gardenplant_id': gardenplant.id,
         'plant_name': gardenplant.plant_name,
         'date_added': gardenplant.date_added,
         'last_watered': gardenplant.last_watered,
         'harvest_date': gardenplant.harvest_date,
+        'days_until_harvest': remaining,
         'plant_type': gardenplant.plant.plant_type
     }
-    # code.interact(local=dict(globals(), **locals()))
     response = jsonify(result)
     response.status_code = 200
     return response

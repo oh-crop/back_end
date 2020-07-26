@@ -94,6 +94,7 @@ def add_to_garden():
 
 
     result = {
+    'garden_plant_id': garden_plant.id,
     'plant_id': garden_plant.plant_id,
     'garden_id':garden_plant.garden_id,
     'plant_name': plant_name,
@@ -101,6 +102,7 @@ def add_to_garden():
     }
     response = jsonify(result)
     response.status_code = 201
+
     return response
 
 @api.route('/garden')
@@ -116,6 +118,31 @@ def get_garden():
             'plant_name': plant.plant_name,
         }
         results.append(obj)
+    response = jsonify(results)
+    response.status_code = 200
+    return response
+
+@api.route('/garden/water', methods=['POST'])
+def update_watering():
+    garden_plant_id = request.args['garden_plant_id']
+    garden_plant = GardenPlant.query.get_or_404(garden_plant_id)
+    freq = garden_plant.plant.water_frequency
+    raw_next_water = (datetime.now() + timedelta(days=freq))
+    next_water = raw_next_water.strftime("%a, %B %d %Y")
+
+    garden_plant.last_watered = datetime.now()
+    db.session.commit()
+
+    last_water = garden_plant.last_watered.strftime("%a, %B %d %Y")
+
+    results = {
+        'id': garden_plant.id,
+        'name': garden_plant.plant_name,
+        'plant_type': garden_plant.plant.plant_type,
+        'water_frequency': freq,
+        'last_watered': last_water,
+        'next_water': next_water
+    }
     response = jsonify(results)
     response.status_code = 200
     return response

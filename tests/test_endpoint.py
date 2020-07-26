@@ -2,9 +2,13 @@ import unittest
 import os
 import json
 from app import create_app, db
-from app.models import Plant, Garden
+from app.models import Plant, Garden, GardenPlant
 from datetime import datetime
 from datetime import timedelta
+import logging
+import sys
+
+
 
 class EndpointTestCase(unittest.TestCase):
     """This class represents the test case"""
@@ -93,6 +97,26 @@ class EndpointTestCase(unittest.TestCase):
         self.assertIn("Ezekiel", str(res.data))
         self.assertIn("Dan", str(res.data))
         self.assertNotIn("Agatha", str(res.data))
+
+    def test_api_can_update_watering_information(self):
+        garden = Garden(id=1)
+        zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
+        dan = Plant(id=5,plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
+        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
+        gardenplant = GardenPlant(id=1, plant_id=dan.id, garden_id=garden.id,plant_name="Dan")
+        db.session.add_all([zeke, dan, agatha, garden, gardenplant])
+        db.session.commit()
+
+        last_watered = (datetime.now() + timedelta(days=dan.water_frequency))
+        next_water = last_watered.strftime("%a, %B %d %Y")
+
+        res = self.client().post('/api/v1/garden/water?garden_plant_id={}'.format(gardenplant.id))
+        self.assertEqual(res.status_code, 200)
+        self.assertIn("Dan", str(res.data))
+        self.assertIn(next_water, str(res.data))
+        self.assertIn(datetime.now().strftime("%a, %B %d %Y"), str(res.data))
+
+
 
 # Execute test
 if __name__ == "__main__":

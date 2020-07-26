@@ -144,5 +144,21 @@ def update_watering():
         'next_water': next_water
     }
     response = jsonify(results)
+    response.status_code = 201
+    return response
+
+@api.route('garden/plants/<int:id>')
+def get_gardenplant(id):
+    gardenplant = GardenPlant.query.get_or_404(id)
+    result = {
+        'id': gardenplant.id,
+        'plant_name': gardenplant.plant_name,
+        'date_added': gardenplant.date_added,
+        'last_watered': gardenplant.last_watered,
+        'harvest_date': gardenplant.harvest_date,
+        'plant_type': gardenplant.plant.plant_type
+    }
+    # code.interact(local=dict(globals(), **locals()))
+    response = jsonify(result)
     response.status_code = 200
     return response

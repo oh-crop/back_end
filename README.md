@@ -217,13 +217,36 @@ https://oh-crop-be.herokuapp.com/api/v1/garden?plant_id=4&plant_name=Terry
 
 Response:
 {
-    "harvest_date": "Fri, 23 Oct 2020 00:00:00 GMT",
+    "garden_id": 1,
+    "garden_plant_id": 54,
+    "harvest_date": "Sat, 24 Oct 2020 00:00:00 GMT",
     "plant_id": 4,
     "plant_name": "Terry"
 }
 ```
 
 Note: will need to pass query params for the ID of the plant being added being added and the unique name the user will assign to the plant: {plant_id: 4, plant_name: Terry}
+
+__Water Your Plant__
+
+This endpoint allows you to water your plant. It changes the `last_watered` to today and tells you when you will need to water next
+
+```
+Request:
+https://oh-crop-be.herokuapp.com/api/v1/garden/water?garden_plant_id=53
+
+Response:
+{
+    "id": 53,
+    "last_watered": "Sun, July 26 2020",
+    "name": "Terry",
+    "next_water": "Tue, July 28 2020",
+    "plant_type": "Jalapeno Peppers",
+    "water_frequency": 2
+}
+```
+
+Note: will need to pass query params for the ID of the `garden_plant` (This can be obtained from the `id` in the add a plant to a garden ednpoint above): {garden_plant_id: 53}
 
 
 ## <a name="running-the-tests"></a> Running the tests

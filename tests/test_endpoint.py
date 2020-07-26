@@ -133,11 +133,14 @@ class EndpointTestCase(unittest.TestCase):
     def test_api_can_return_plant_profile_page(self):
         garden = Garden(id=1)
         adrian = Plant(id=5, plant_type='Buckcherry',image='adrian_photo.jpg',lighting='Full Sun',water_frequency=5,harvest_time=50,root_depth=12,annual="Annual")
-        gardenplant = GardenPlant(plant_id=adrian.id, garden_id=garden.id,plant_name="Adrian")
-        db.session.add_all([adrian, garden, gardenplant])
+        db.session.add_all([adrian, garden])
         db.session.commit()
+        res = self.client().post('/api/v1/garden?plant_id={}&plant_name=Adrian'.format(adrian.id))
 
-        res = self.client().get('/api/v1/garden/plants/{}'.format(gardenplant.id))
+        data_dict = json.loads(res.data)
+        gardenplant_id = data_dict['garden_plant_id']
+
+        res = self.client().get('/api/v1/garden/plants/{}'.format(gardenplant_id))
         self.assertEqual(res.status_code, 200)
         self.assertIn("Adrian", str(res.data))
         self.assertIn("Buckcherry", str(res.data))

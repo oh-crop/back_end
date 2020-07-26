@@ -151,7 +151,7 @@ def update_watering():
 def get_gardenplant(id):
     gardenplant = GardenPlant.query.get_or_404(id)
     result = {
-        'id': gardenplant.id,
+        'gardenplant_id': gardenplant.id,
         'plant_name': gardenplant.plant_name,
         'date_added': gardenplant.date_added,
         'last_watered': gardenplant.last_watered,

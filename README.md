@@ -220,8 +220,8 @@ https://oh-crop-be.herokuapp.com/api/v1/garden/plants/4
 Response:
 {
   "date_added": "Sat, 25 Jul 2020 19:10:52 GMT",
+  "gardenplant_id": 4,
   "harvest_date": "Sun, 13 Sep 2020 00:00:00 GMT",
-  "id": 4,
   "last_watered": null,
   "plant_name": "Melissa",
   "plant_type": "Pumpkin"

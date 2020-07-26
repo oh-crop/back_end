@@ -63,10 +63,12 @@ def search_plants():
     plants = db.session.query(Plant).filter(Plant.plant_type.ilike('%{}%'.format(search))).all()
 
     if len(plants) == 0:
-        results = {
-            'image': 'error image',
-            'info': 'We did not find any plants called {}.  Maybe try a different search term?'.format(search)
-        }
+        results = [
+            {
+            'plant_image': 'https://images.unsplash.com/reserve/unsplash_529f1a3f2f5ed_1.JPG',
+            'plant_type': 'Oh Crop!  We did not find any plants called {}.  Maybe try a different search term?'.format(search)
+            }
+        ]
     else:
         results = []
         for plant in plants:
@@ -89,12 +91,13 @@ def add_to_garden():
 
     if plant.harvest_time:
         harvest_date = (datetime.now() + timedelta(days=plant.harvest_time))
-        days_to_harvest = harvest_date.strftime("%a, %B %d %Y")
+        formatted_harvest_date = harvest_date.strftime("%a, %B %d, %Y")
     else:
-        days_to_harvest = None
+        harvest_date = None
+        formatted_harvest_date = 'N/A'
 
 
-    garden_plant = GardenPlant(plant_id=plant_id,plant_name=plant_name, harvest_date=days_to_harvest,garden_id=garden.id)
+    garden_plant = GardenPlant(plant_id=plant_id,plant_name=plant_name, last_watered = datetime.now(), harvest_date=harvest_date, garden_id=garden.id)
     db.session.add_all([garden_plant])
     db.session.commit()
 
@@ -104,7 +107,7 @@ def add_to_garden():
     'plant_id': garden_plant.plant_id,
     'garden_id':garden_plant.garden_id,
     'plant_name': plant_name,
-    'harvest_date':garden_plant.harvest_date
+    'harvest_date': formatted_harvest_date
     }
     response = jsonify(result)
     response.status_code = 201
@@ -136,18 +139,18 @@ def get_garden():
         response.status_code = 200
         return response
 
-@api.route('/garden/water', methods=['POST'])
+@api.route('/garden/water', methods=['PUT'])
 def update_watering():
     garden_plant_id = request.args['garden_plant_id']
     garden_plant = GardenPlant.query.get_or_404(garden_plant_id)
     freq = garden_plant.plant.water_frequency
     raw_next_water = (datetime.now() + timedelta(days=freq))
-    next_water = raw_next_water.strftime("%a, %B %d %Y")
+    next_water = raw_next_water.strftime("%a, %B %d, %Y")
 
     garden_plant.last_watered = datetime.now()
     db.session.commit()
 
-    last_water = garden_plant.last_watered.strftime("%a, %B %d %Y")
+    last_water = garden_plant.last_watered.strftime("%a, %B %d, %Y")
 
     results = {
         'id': garden_plant.id,
@@ -165,21 +168,31 @@ def update_watering():
 def get_gardenplant(id):
     if request.method == 'GET':
         gardenplant = GardenPlant.query.get_or_404(id)
+        today = datetime.now()
         if gardenplant.plant.harvest_time:
-            today = datetime.now()
             harvest = gardenplant.harvest_date
             remaining = (harvest - today).days
         else:
             remaining = None
 
+        freq = gardenplant.plant.water_frequency
+        date_of_next_water = today + timedelta(days=freq)
+        days_till_water = (date_of_next_water - today).days
+
+        formatted_date_added = gardenplant.date_added.strftime("%a, %B %d, %Y")
+        formatted_harvest_date = gardenplant.harvest_date.strftime("%a, %B %d, %Y")
+        formatted_last_watered = gardenplant.last_watered.strftime("%a, %B %d, %Y")
+
         result = {
             'gardenplant_id': gardenplant.id,
             'plant_name': gardenplant.plant_name,
-            'date_added': gardenplant.date_added,
-            'last_watered': gardenplant.last_watered,
-            'harvest_date': gardenplant.harvest_date,
+            'date_added': formatted_date_added,
+            'last_watered': formatted_last_watered,
+            'harvest_date': formatted_harvest_date,
             'days_until_harvest': remaining,
-            'plant_type': gardenplant.plant.plant_type
+            'days_until_next_water': days_till_water,
+            'plant_type': gardenplant.plant.plant_type,
+            'image': gardenplant.plant.image
         }
         response = jsonify(result)
         response.status_code = 200

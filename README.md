@@ -267,6 +267,21 @@ Response:
 }
 ```
 
+### DELETE Endpoints:
+__Delete a plant from your garden__
+
+This endpoint allows a user to delete a plant from their garden
+
+```
+https://oh-crop-be.herokuapp.com/api/v1/garden/plants/6
+
+Response:
+{
+  "gardenplant_id": 7,
+  "plant_name": "Tim"
+}
+```
+
 Note: will need to pass query params for the ID of the `garden_plant` (This can be obtained from the `id` in the add a plant to a garden ednpoint above): {garden_plant_id: 53}
 
 

@@ -145,6 +145,27 @@ class EndpointTestCase(unittest.TestCase):
         self.assertIn("Adrian", str(res.data))
         self.assertIn("Buckcherry", str(res.data))
 
+    def test_api_can_remove_a_plant_from_a_garden(self):
+        garden = Garden(id=1)
+        lincoln = Plant(id=18, plant_type='Lime',image='lincoln_photo.jpg',lighting='Full Sun',water_frequency=5,harvest_time=50,root_depth=12,annual="Annual")
+        db.session.add_all([lincoln, garden])
+        db.session.commit()
+        res = self.client().post('/api/v1/garden?plant_id={}&plant_name=Lincoln'.format(lincoln.id))
+
+        data_dict = json.loads(res.data)
+        gardenplant_id = data_dict['garden_plant_id']
+
+        res1 = self.client().get('/api/v1/garden')
+        self.assertEqual(res1.status_code, 200)
+        self.assertIn("Lincoln", str(res1.data))
+
+        res2 = self.client().delete('/api/v1/garden/plants/{}'.format(gardenplant_id))
+        self.assertEqual(res2.status_code, 202)
+        self.assertIn("Lincoln", str(res2.data))
+
+        res3 = self.client().get('/api/v1/garden')
+        self.assertEqual(res3.status_code, 200)
+        self.assertIn("You have no plants in your garden", str(res3.data))
 
 # Execute test
 if __name__ == "__main__":

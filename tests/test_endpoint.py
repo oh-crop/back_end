@@ -76,11 +76,11 @@ class EndpointTestCase(unittest.TestCase):
         db.session.commit()
 
         harvest_date = (datetime.now() + timedelta(days=50))
-        parsed_harvest_date = harvest_date.strftime("%a, %d %b %Y")
+        parsed_harvest_date = harvest_date.strftime("%a, %B %d, %Y")
         res = self.client().post('/api/v1/garden?plant_id=1&plant_name=Ezekiel')
         self.assertEqual(res.status_code, 201)
         self.assertIn("Ezekiel", str(res.data))
-        self.assertIn("{} 00:00:00 GMT".format(parsed_harvest_date), str(res.data))
+        self.assertIn(parsed_harvest_date, str(res.data))
 
     def test_api_can_add_plant_to_garden_with_no_harvest_date(self):
         garden = Garden(id=1)
@@ -92,7 +92,7 @@ class EndpointTestCase(unittest.TestCase):
         res = self.client().post('/api/v1/garden?plant_id={}&plant_name=Marjorie'.format(dan.id))
         self.assertEqual(res.status_code, 201)
         self.assertIn("Marjorie", str(res.data))
-        self.assertIn("null", str(res.data))
+        self.assertIn("N/A", str(res.data))
 
     def test_api_can_return_all_plants_in_garden(self):
         garden = Garden(id=1)
@@ -122,13 +122,13 @@ class EndpointTestCase(unittest.TestCase):
         db.session.commit()
 
         last_watered = (datetime.now() + timedelta(days=dan.water_frequency))
-        next_water = last_watered.strftime("%a, %B %d %Y")
+        next_water = last_watered.strftime("%a, %B %d, %Y")
 
-        res = self.client().post('/api/v1/garden/water?garden_plant_id={}'.format(gardenplant.id))
+        res = self.client().put('/api/v1/garden/water?garden_plant_id={}'.format(gardenplant.id))
         self.assertEqual(res.status_code, 201)
         self.assertIn("Dan", str(res.data))
         self.assertIn(next_water, str(res.data))
-        self.assertIn(datetime.now().strftime("%a, %B %d %Y"), str(res.data))
+        self.assertIn(datetime.now().strftime("%a, %B %d, %Y"), str(res.data))
 
     def test_api_can_return_plant_profile_page(self):
         garden = Garden(id=1)

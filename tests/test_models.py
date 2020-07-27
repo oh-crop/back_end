@@ -13,7 +13,6 @@ class ModelTestCase(unittest.TestCase):
         self.app_context.push()
         db.create_all()
 
-
     def tearDown(self):
         db.session.remove()
         db.drop_all()

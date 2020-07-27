@@ -49,6 +49,9 @@ class GardenPlant(db.Model):
         gardenplant = GardenPlant.query.get_or_404(id)
         return gardenplant
 
+    def format_time(date):
+        return date.strftime("%a, %B %d, %Y")
+
 class Garden(db.Model):
     __tablename__ = 'gardens'
     id = db.Column(db.Integer, primary_key=True)

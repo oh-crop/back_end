@@ -93,7 +93,7 @@ def add_to_garden():
 
     if plant.harvest_time:
         harvest_date = (datetime.now() + timedelta(days=plant.harvest_time))
-        formatted_harvest_date = harvest_date.strftime("%a, %B %d, %Y")
+        formatted_harvest_date = GardenPlant.format_time(harvest_date)
     else:
         harvest_date = None
         formatted_harvest_date = 'N/A'
@@ -147,12 +147,12 @@ def update_watering():
     garden_plant = GardenPlant.get_by_id(garden_plant_id)
     freq = garden_plant.plant.water_frequency
     raw_next_water = (datetime.now() + timedelta(days=freq))
-    next_water = raw_next_water.strftime("%a, %B %d, %Y")
+    next_water = GardenPlant.format_time(raw_next_water)
 
     garden_plant.last_watered = datetime.now()
     db.session.commit()
 
-    last_water = garden_plant.last_watered.strftime("%a, %B %d, %Y")
+    last_water = GardenPlant.format_time(garden_plant.last_watered)
 
     results = {
         'id': garden_plant.id,
@@ -174,7 +174,7 @@ def get_gardenplant(id):
         if gardenplant.plant.harvest_time:
             harvest = gardenplant.harvest_date
             remaining = (harvest - today).days
-            formatted_harvest_date = gardenplant.harvest_date.strftime("%a, %B %d, %Y")
+            formatted_harvest_date = GardenPlant.format_time(gardenplant.harvest_date)
         else:
             remaining = "N/A"
             formatted_harvest_date = "N/A"
@@ -183,8 +183,8 @@ def get_gardenplant(id):
         date_of_next_water = today + timedelta(days=freq)
         days_till_water = (date_of_next_water - today).days
 
-        formatted_date_added = gardenplant.date_added.strftime("%a, %B %d, %Y")
-        formatted_last_watered = gardenplant.last_watered.strftime("%a, %B %d, %Y")
+        formatted_date_added = GardenPlant.format_time(gardenplant.date_added)
+        formatted_last_watered = GardenPlant.format_time(gardenplant.last_watered)
 
         result = {
             'gardenplant_id': gardenplant.id,

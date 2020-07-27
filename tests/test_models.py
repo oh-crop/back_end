@@ -24,10 +24,7 @@ class ModelTestCase(unittest.TestCase):
         self.assertTrue(plant.plant_type == 'Celery')
         self.assertTrue(plant.plant_type != 'Corn')
 
-    def test_it_has_a_plant_type(self):
+    def test_it_has_a_gardenplant(self):
         plant = Plant(plant_type='Celery')
         garden_plant = GardenPlant(plant_id=plant.id)
         self.assertTrue(garden_plant.plant_id == plant.id)
-
-if __name__ == "__main__":
-    unittest.main()

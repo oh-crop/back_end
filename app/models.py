@@ -19,9 +19,6 @@ class Plant(db.Model):
     def get_all():
         return Plant.query.all()
 
-    def in_garden(self):
-        Garden.query.filter_by(plant_id=self.id).first()
-
     def random_id():
         from random import randint
         num = randint(1, 24)
@@ -36,7 +33,7 @@ class GardenPlant(db.Model):
     last_watered = db.Column(db.DateTime)
     date_added = db.Column(db.DateTime, default=datetime.now())
     harvest_date = db.Column(db.DateTime)
-    
+
     plant = relationship("Plant")
 
 class Garden(db.Model):

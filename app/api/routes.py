@@ -172,15 +172,16 @@ def get_gardenplant(id):
         if gardenplant.plant.harvest_time:
             harvest = gardenplant.harvest_date
             remaining = (harvest - today).days
+            formatted_harvest_date = gardenplant.harvest_date.strftime("%a, %B %d, %Y")
         else:
-            remaining = None
+            remaining = "N/A"
+            formatted_harvest_date = "N/A"
 
         freq = gardenplant.plant.water_frequency
         date_of_next_water = today + timedelta(days=freq)
         days_till_water = (date_of_next_water - today).days
 
         formatted_date_added = gardenplant.date_added.strftime("%a, %B %d, %Y")
-        formatted_harvest_date = gardenplant.harvest_date.strftime("%a, %B %d, %Y")
         formatted_last_watered = gardenplant.last_watered.strftime("%a, %B %d, %Y")
 
         result = {

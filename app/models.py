@@ -17,12 +17,21 @@ class Plant(db.Model):
     gardens = relationship("Garden", secondary="garden_plants")
 
     def get_all():
-        return Plant.query.all()
+        all_plants = Plant.query.all()
+        return all_plants
+
+    def get_by_id(id):
+        plant =  Plant.query.get_or_404(id)
+        return plant
 
     def random_id():
         from random import randint
         num = randint(1, 24)
         return num
+
+    def plant_search(search):
+        plants = db.session.query(Plant).filter(Plant.plant_type.ilike('%{}%'.format(search))).all()
+        return plants
 
 class GardenPlant(db.Model):
     __tablename__ = 'garden_plants'
@@ -36,9 +45,19 @@ class GardenPlant(db.Model):
 
     plant = relationship("Plant")
 
+    def get_by_id(id):
+        gardenplant = GardenPlant.query.get_or_404(id)
+        return gardenplant
+
 class Garden(db.Model):
     __tablename__ = 'gardens'
     id = db.Column(db.Integer, primary_key=True)
 
     plants = relationship("Plant", secondary="garden_plants")
     gardenplants = relationship("GardenPlant")
+
+    # This methods should ideally return a user's garden but for this iteration
+    # of this app, we are hard coding it.
+
+    def current_garden():
+        return Garden.query.all()[0]

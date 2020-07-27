@@ -11,9 +11,25 @@ from datetime import timedelta
 def endpoint():
     return "I need to go take a shower so I can't tell if I'm crying or not."
 
+@api.route('/plants/')
+def all_plants():
+    plants = Plant.get_all()
+    results = []
+
+    for plant in plants:
+        obj = {
+            'id': plant.id,
+            'image': plant.image
+        }
+        results.append(obj)
+
+    response = jsonify(results)
+    response.status_code = 200
+    return response
+
 @api.route('/plants/<int:id>')
 def get_plant(id):
-    plant = Plant.query.get_or_404(id)
+    plant = Plant.get_by_id(id)
     result = {
                 'id': plant.id,
                 'plant_type': plant.plant_type,
@@ -28,26 +44,10 @@ def get_plant(id):
     response.status_code = 200
     return response
 
-
-@api.route('/plants/')
-def all_plants():
-    plants = Plant.get_all()
-    results = []
-
-    for plant in plants:
-        obj = {
-            'id': plant.id,
-            'image': plant.image
-        }
-        results.append(obj)
-    response = jsonify(results)
-    response.status_code = 200
-    return response
-
 @api.route('/plants/meet')
 def random_plant():
     id = Plant.random_id()
-    plant = Plant.query.get_or_404(id)
+    plant = Plant.get_by_id(id)
     result = {
                 'id': plant.id,
                 'plant_type': plant.plant_type,
@@ -60,7 +60,7 @@ def random_plant():
 @api.route('/plants/search')
 def search_plants():
     search = request.args['q']
-    plants = db.session.query(Plant).filter(Plant.plant_type.ilike('%{}%'.format(search))).all()
+    plants = Plant.plant_search(search)
 
     if len(plants) == 0:
         results = [
@@ -78,6 +78,7 @@ def search_plants():
                 'plant_image': plant.image,
             }
             results.append(obj)
+
     response = jsonify(results)
     response.status_code = 200
     return response
@@ -86,8 +87,9 @@ def search_plants():
 def add_to_garden():
     plant_id = request.args['plant_id']
     plant_name = request.args['plant_name']
-    plant = Plant.query.filter_by(id=plant_id,).first()
-    garden = Garden.query.all()[0]
+    plant = Plant.get_by_id(plant_id)
+
+    garden = Garden.current_garden()
 
     if plant.harvest_time:
         harvest_date = (datetime.now() + timedelta(days=plant.harvest_time))
@@ -116,8 +118,8 @@ def add_to_garden():
 
 @api.route('/garden')
 def get_garden():
-    garden = Garden.query.all()[0]
-    gardenplants =  garden.gardenplants
+    garden = Garden.current_garden()
+    gardenplants = garden.gardenplants
 
     if len(gardenplants) == 0:
         results = {
@@ -142,7 +144,7 @@ def get_garden():
 @api.route('/garden/water', methods=['PUT'])
 def update_watering():
     garden_plant_id = request.args['garden_plant_id']
-    garden_plant = GardenPlant.query.get_or_404(garden_plant_id)
+    garden_plant = GardenPlant.get_by_id(garden_plant_id)
     freq = garden_plant.plant.water_frequency
     raw_next_water = (datetime.now() + timedelta(days=freq))
     next_water = raw_next_water.strftime("%a, %B %d, %Y")
@@ -167,7 +169,7 @@ def update_watering():
 @api.route('garden/plants/<int:id>', methods=['GET', 'DELETE'])
 def get_gardenplant(id):
     if request.method == 'GET':
-        gardenplant = GardenPlant.query.get_or_404(id)
+        gardenplant = GardenPlant.get_by_id(id)
         today = datetime.now()
         if gardenplant.plant.harvest_time:
             harvest = gardenplant.harvest_date
@@ -201,7 +203,7 @@ def get_gardenplant(id):
 
     else:
         request.method == 'DELETE'
-        gardenplant = GardenPlant.query.get_or_404(id)
+        gardenplant = GardenPlant.get_by_id(id)
         result = {
             'gardenplant_id': gardenplant.id,
             'plant_name': gardenplant.plant_name,

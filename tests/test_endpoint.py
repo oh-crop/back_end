@@ -26,7 +26,7 @@ class EndpointTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-    def test_api_can_get_a_dummy_endpoint(self):
+    def test_api_can_get_welcome_endpoint(self):
         """Test API can get a dummy string (GET request)."""
         res = self.client().get('/api/v1/')
         self.assertEqual(res.status_code, 200)
@@ -39,8 +39,19 @@ class EndpointTestCase(unittest.TestCase):
         db.session.commit()
         res = self.client().get('/api/v1/plants/{}'.format(jimmy.id))
         self.assertEqual(res.status_code, 200)
-        self.assertNotIn(dan.plant_type, str(res.data))
-        self.assertIn(jimmy.plant_type, str(res.data))
+
+        json_response = json.loads(res.data)
+
+        self.assertNotEqual(dan.id, json_response['id'])
+
+        self.assertEqual(jimmy.id, json_response['id'])
+        self.assertEqual(jimmy.plant_type, json_response['plant_type'])
+        self.assertEqual(jimmy.image, json_response['plant_image'])
+        self.assertEqual(jimmy.lighting, json_response['lighting'])
+        self.assertEqual(jimmy.water_frequency, json_response['days_between_water'])
+        self.assertEqual(jimmy.harvest_time, json_response['days_to_harvest_from_seed'])
+        self.assertEqual(jimmy.root_depth, json_response['root_depth_in'])
+        self.assertEqual(jimmy.annual, json_response['lifecycle'])
 
     def test_api_can_search_for_a_plant_type(self):
         jimmy = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
@@ -50,9 +61,22 @@ class EndpointTestCase(unittest.TestCase):
         db.session.commit()
         res = self.client().get('/api/v1/plants/search?q=tomato')
         self.assertEqual(res.status_code, 200)
-        self.assertNotIn(dan.plant_type, str(res.data))
-        self.assertIn(jimmy.plant_type, str(res.data))
-        self.assertIn(agatha.plant_type, str(res.data))
+
+        json_response = json.loads(res.data)
+
+        self.assertEqual(len(json_response), 2)
+
+        self.assertEqual(jimmy.id, json_response[0]['id'])
+        self.assertEqual(jimmy.plant_type, json_response[0]['plant_type'])
+        self.assertEqual(jimmy.image, json_response[0]['plant_image'])
+        self.assertEqual(agatha.id, json_response[1]['id'])
+        self.assertEqual(agatha.plant_type, json_response[1]['plant_type'])
+        self.assertEqual(agatha.image, json_response[1]['plant_image'])
+
+        self.assertNotIn(dan.id, json_response)
+        self.assertNotIn(dan.plant_type, json_response)
+        self.assertNotIn(dan.image, json_response)
+
 
     def test_api_seach_has_a_sad_path(self):
         jimmy = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
@@ -62,10 +86,25 @@ class EndpointTestCase(unittest.TestCase):
         db.session.commit()
         res = self.client().get('/api/v1/plants/search?q=elephant')
         self.assertEqual(res.status_code, 200)
-        self.assertNotIn(dan.plant_type, str(res.data))
-        self.assertNotIn(jimmy.plant_type, str(res.data))
-        self.assertNotIn(agatha.plant_type, str(res.data))
-        self.assertIn("We did not find any plants called elephant.  Maybe try a different search term?", str(res.data))
+
+        no_response_image = 'https://images.unsplash.com/reserve/unsplash_529f1a3f2f5ed_1.JPG'
+        no_response_message = 'Oh Crop!  We did not find any plants called elephant.  Maybe try a different search term?'
+
+        json_response = json.loads(res.data)
+
+        self.assertEqual(len(json_response), 1)
+
+        self.assertEqual(no_response_image, json_response[0]['plant_image'])
+        self.assertEqual(no_response_message, json_response[0]['plant_type'])
+        self.assertNotIn(jimmy.id, json_response)
+        self.assertNotIn(jimmy.plant_type, json_response)
+        self.assertNotIn(jimmy.image, json_response)
+        self.assertNotIn(agatha.id, json_response)
+        self.assertNotIn(agatha.plant_type, json_response)
+        self.assertNotIn(agatha.image, json_response)
+        self.assertNotIn(dan.id, json_response)
+        self.assertNotIn(dan.plant_type, json_response)
+        self.assertNotIn(dan.image, json_response)
 
     def test_api_can_add_plant_to_garden(self):
         garden = Garden(id=1)
@@ -77,10 +116,19 @@ class EndpointTestCase(unittest.TestCase):
 
         harvest_date = (datetime.now() + timedelta(days=50))
         parsed_harvest_date = harvest_date.strftime("%a, %B %d, %Y")
-        res = self.client().post('/api/v1/garden?plant_id=1&plant_name=Ezekiel')
+        res = self.client().post('/api/v1/garden?plant_id={}&plant_name=Ezekiel'.format(zeke.id))
         self.assertEqual(res.status_code, 201)
-        self.assertIn("Ezekiel", str(res.data))
-        self.assertIn(parsed_harvest_date, str(res.data))
+
+        json_response = json.loads(res.data)
+
+        self.assertIsNotNone(json_response['garden_plant_id'])
+        self.assertEqual(zeke.id, json_response['plant_id'])
+        self.assertEqual(garden.id, json_response['garden_id'])
+        self.assertEqual("Ezekiel", json_response['plant_name'])
+        self.assertEqual(parsed_harvest_date, json_response['harvest_date'])
+
+        self.assertNotEqual(agatha.id, json_response['plant_id'])
+        self.assertNotEqual(dan.id, json_response['plant_id'])
 
     def test_api_can_add_plant_to_garden_with_no_harvest_date(self):
         garden = Garden(id=1)
@@ -89,10 +137,18 @@ class EndpointTestCase(unittest.TestCase):
         db.session.add_all([zeke, dan, garden])
         db.session.commit()
 
-        res = self.client().post('/api/v1/garden?plant_id={}&plant_name=Marjorie'.format(dan.id))
+        res = self.client().post('/api/v1/garden?plant_id={}&plant_name=Cactus Dan'.format(dan.id))
         self.assertEqual(res.status_code, 201)
-        self.assertIn("Marjorie", str(res.data))
-        self.assertIn("N/A", str(res.data))
+
+        json_response = json.loads(res.data)
+
+        self.assertIsNotNone(json_response['garden_plant_id'])
+        self.assertEqual(dan.id, json_response['plant_id'])
+        self.assertEqual(garden.id, json_response['garden_id'])
+        self.assertEqual("Cactus Dan", json_response['plant_name'])
+        self.assertEqual("N/A", json_response['harvest_date'])
+
+        self.assertNotEqual(zeke.id, json_response['plant_id'])
 
     def test_api_can_return_all_plants_in_garden(self):
         garden = Garden(id=1)
@@ -107,47 +163,104 @@ class EndpointTestCase(unittest.TestCase):
 
         res = self.client().get('/api/v1/garden')
         self.assertEqual(res.status_code, 200)
-        self.assertIn("Ezekiel", str(res.data))
-        self.assertIn("Dan", str(res.data))
-        self.assertNotIn("Agatha", str(res.data))
+
+        json_response = json.loads(res.data)
+
+        self.assertEqual(len(json_response), 2)
+
+        self.assertEqual(zeke.id, json_response[0]['id'])
+        self.assertEqual("Ezekiel", json_response[0]['plant_name'])
+        self.assertEqual(dan.id, json_response[1]['id'])
+        self.assertEqual("Dan", json_response[1]['plant_name'])
+
+        self.assertNotEqual(agatha.id, json_response[0]['id'])
+        self.assertNotEqual(agatha.id, json_response[1]['id'])
+
+    def test_api_can_return_msg_when_no_plants_are_in_garden(self):
+        garden = Garden(id=1)
+        zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
+        dan = Plant(plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
+        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
+        db.session.add_all([zeke, dan, agatha, garden])
+        db.session.commit()
+
+        res = self.client().get('/api/v1/garden')
+        self.assertEqual(res.status_code, 200)
+
+        json_response = json.loads(res.data)
+
+        self.assertEqual('You have no plants in your garden', json_response['info'])
 
     def test_api_can_update_watering_information(self):
         garden = Garden(id=1)
         zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
         dan = Plant(id=5,plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
-        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
-        dan = Plant(id=5,plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
-        gardenplant = GardenPlant(id=1, plant_id=dan.id, garden_id=garden.id,plant_name="Dan")
-        db.session.add_all([zeke, dan, agatha, garden, gardenplant])
+        db.session.add_all([zeke, dan, garden])
         db.session.commit()
 
-        last_watered = (datetime.now() + timedelta(days=dan.water_frequency))
-        next_water = last_watered.strftime("%a, %B %d, %Y")
 
-        res = self.client().put('/api/v1/garden/water?garden_plant_id={}'.format(gardenplant.id))
-        self.assertEqual(res.status_code, 201)
-        self.assertIn("Dan", str(res.data))
-        self.assertIn(next_water, str(res.data))
-        self.assertIn(datetime.now().strftime("%a, %B %d, %Y"), str(res.data))
+        res_zeke = self.client().post('/api/v1/garden?plant_id={}&plant_name=Ezekiel'.format(zeke.id))
+        res_dan = self.client().post('/api/v1/garden?plant_id={}&plant_name=Dan'.format(dan.id))
+
+        dan_json_response = json.loads(res_dan.data)
+        zeke_json_response = json.loads(res_zeke.data)
+
+        self.assertEqual("Dan", dan_json_response['plant_name'])
+
+        water_res = self.client().put('/api/v1/garden/water?garden_plant_id={}'.format(dan_json_response['garden_plant_id']))
+        self.assertEqual(water_res.status_code, 201)
+
+        last_watered = datetime.now().strftime("%a, %B %d, %Y")
+        next_water = (datetime.now() + timedelta(days=dan.water_frequency)).strftime("%a, %B %d, %Y")
+
+        water_json_response = json.loads(water_res.data)
+
+        self.assertEqual(dan_json_response['garden_plant_id'], water_json_response['id'])
+        self.assertEqual(dan_json_response['plant_name'], water_json_response['name'])
+        self.assertEqual(dan.plant_type, water_json_response['plant_type'])
+        self.assertEqual(dan.water_frequency, water_json_response['water_frequency'])
+        self.assertEqual(last_watered, water_json_response['last_watered'])
+        self.assertEqual(next_water, water_json_response['next_water'])
+
+        self.assertNotEqual(zeke_json_response['garden_plant_id'], water_json_response['id'])
+        self.assertNotEqual(zeke_json_response['plant_name'], water_json_response['name'])
+        self.assertNotEqual(zeke.plant_type, water_json_response['plant_type'])
+        self.assertNotEqual(zeke.water_frequency, water_json_response['water_frequency'])
 
     def test_api_can_return_plant_profile_page(self):
         garden = Garden(id=1)
         adrian = Plant(id=5, plant_type='Buckcherry',image='adrian_photo.jpg',lighting='Full Sun',water_frequency=5,harvest_time=50,root_depth=12,annual="Annual")
         db.session.add_all([adrian, garden])
         db.session.commit()
-        res = self.client().post('/api/v1/garden?plant_id={}&plant_name=Adrian'.format(adrian.id))
+        add_adrian_res = self.client().post('/api/v1/garden?plant_id={}&plant_name=Adrian'.format(adrian.id))
 
-        data_dict = json.loads(res.data)
-        gardenplant_id = data_dict['garden_plant_id']
+        add_adrian_json = json.loads(add_adrian_res.data)
+        gardenplant_id = add_adrian_json['garden_plant_id']
 
-        res = self.client().get('/api/v1/garden/plants/{}'.format(gardenplant_id))
-        self.assertEqual(res.status_code, 200)
-        self.assertIn("Adrian", str(res.data))
-        self.assertIn("Buckcherry", str(res.data))
+        profile_res = self.client().get('/api/v1/garden/plants/{}'.format(gardenplant_id))
+        self.assertEqual(profile_res.status_code, 200)
+
+        profile_json_response = json.loads(profile_res.data)
+
+        date_added = datetime.now().strftime("%a, %B %d, %Y")
+        harvest_date = (datetime.now() + timedelta(days=adrian.harvest_time)).strftime("%a, %B %d, %Y")
+        remaining_harvest = ((datetime.now() + timedelta(days=adrian.harvest_time)) - datetime.now()).days
+        # remaining_water = ((datetime.now() + timedelta(days=adrian.water_frequency)) - datetime.now()).days
+
+        self.assertEqual(gardenplant_id, profile_json_response['gardenplant_id'])
+        self.assertEqual("Adrian", profile_json_response['plant_name'])
+        self.assertEqual(date_added, profile_json_response['date_added'])
+        self.assertEqual(date_added, profile_json_response['last_watered'])
+        self.assertEqual(harvest_date, profile_json_response['harvest_date'])
+        self.assertEqual(remaining_harvest, profile_json_response['days_until_harvest'])
+        self.assertEqual(adrian.plant_type, profile_json_response['plant_type'])
+        self.assertEqual(adrian.image, profile_json_response['image'])
+        # Date below not adding up correctly
+        # self.assertEqual(remaining_water, profile_json_response['days_until_next_water'])
 
     def test_api_can_remove_a_plant_from_a_garden(self):
         garden = Garden(id=1)
-        lincoln = Plant(id=18, plant_type='Lime',image='lincoln_photo.jpg',lighting='Full Sun',water_frequency=5,harvest_time=50,root_depth=12,annual="Annual")
+        lincoln = Plant(plant_type='Lime',image='lincoln_photo.jpg',lighting='Full Sun',water_frequency=5,harvest_time=50,root_depth=12,annual="Annual")
         db.session.add_all([lincoln, garden])
         db.session.commit()
         res = self.client().post('/api/v1/garden?plant_id={}&plant_name=Lincoln'.format(lincoln.id))
@@ -157,15 +270,20 @@ class EndpointTestCase(unittest.TestCase):
 
         res1 = self.client().get('/api/v1/garden')
         self.assertEqual(res1.status_code, 200)
-        self.assertIn("Lincoln", str(res1.data))
+        lincoln_in_garden_json_response = json.loads(res1.data)
+        self.assertEqual("Lincoln", lincoln_in_garden_json_response[0]['plant_name'])
+        self.assertEqual(lincoln.id, lincoln_in_garden_json_response[0]['id'])
 
         res2 = self.client().delete('/api/v1/garden/plants/{}'.format(gardenplant_id))
         self.assertEqual(res2.status_code, 202)
-        self.assertIn("Lincoln", str(res2.data))
+        lincoln_out_of_garden_json_response = json.loads(res2.data)
+        self.assertEqual("Lincoln", lincoln_out_of_garden_json_response['plant_name'])
+        self.assertEqual(gardenplant_id, lincoln_out_of_garden_json_response['gardenplant_id'])
 
         res3 = self.client().get('/api/v1/garden')
         self.assertEqual(res3.status_code, 200)
-        self.assertIn("You have no plants in your garden", str(res3.data))
+        no_plants_garden_json_response = json.loads(res3.data)
+        self.assertEqual("You have no plants in your garden", no_plants_garden_json_response['info'])
 
 # Execute test
 if __name__ == "__main__":

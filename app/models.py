@@ -32,7 +32,7 @@ class Plant(db.Model):
         return num
 
     def plant_search(search):
-        plants = db.session.query(Plant).filter(Plant.plant_type.ilike('%{}%'.format(search))).all()
+        plants = db.session.query(Plant).filter(Plant.plant_type.ilike('%{}%'.format(search))).order_by(Plant.plant_type).all()
         return plants
 
 class GardenPlant(db.Model):

@@ -2,6 +2,7 @@ from . import db
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy import func
 
 class Plant(db.Model):
     __tablename__ = 'plants'
@@ -24,12 +25,9 @@ class Plant(db.Model):
         plant =  Plant.query.get_or_404(id)
         return plant
 
-    def random_id():
-        from random import randint
-        plants = Plant.query.all()
-        max = len(plants)
-        num = randint(1, max)
-        return num
+    def random_plant():
+        plant = Plant.query.order_by(func.random()).first()
+        return plant
 
     def plant_search(search):
         plants = db.session.query(Plant).filter(Plant.plant_type.ilike('%{}%'.format(search))).order_by(Plant.plant_type).all()

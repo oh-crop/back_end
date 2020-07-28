@@ -26,7 +26,9 @@ class Plant(db.Model):
 
     def random_id():
         from random import randint
-        num = randint(1, 24)
+        plants = Plant.query.all()
+        max = len(plants)
+        num = randint(1, max)
         return num
 
     def plant_search(search):

@@ -23,6 +23,19 @@ class ModelTestCase(unittest.TestCase):
         self.assertTrue(plant.plant_type == 'Celery')
         self.assertTrue(plant.plant_type != 'Corn')
 
+    def test_it_can_retrieve_all_plants(self):
+        zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
+        dan = Plant(plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
+        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
+        db.session.add_all([zeke, dan, agatha])
+        db.session.commit()
+
+        plants = Plant.query.all()
+
+        self.assertIn(zeke, plants)
+        self.assertIn(dan, plants)
+        self.assertIn(agatha, plants)
+
     def test_it_has_a_gardenplant(self):
         plant = Plant(plant_type='Celery')
         garden_plant = GardenPlant(plant_id=plant.id)

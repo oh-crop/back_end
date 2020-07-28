@@ -61,17 +61,27 @@ class ModelTestCase(unittest.TestCase):
         self.assertNotEqual(dan.id, plant.id)
         self.assertNotEqual(agatha.id, plant.id)
 
-    def test_a_plant_can_get_a_random_id(self):
+    def test_a_plant_can_get_a_random_plant(self):
         zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
         dan = Plant(plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
         agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
         db.session.add_all([zeke, dan, agatha])
         db.session.commit()
 
-        id = Plant.random_id()
-        ids = [zeke.id, dan.id, agatha.id]
+        plant = Plant.random_plant()
 
-        self.assertIn(id, ids)
+        ids = [zeke.id, dan.id, agatha.id]
+        self.assertIn(plant.id, ids)
+        self.assertIsNotNone(plant.plant_type)
+        self.assertIsNotNone(plant.image)
+        self.assertIsNotNone(plant.lighting)
+        self.assertIsNotNone(plant.water_frequency)
+        self.assertIsNotNone(plant.root_depth)
+        self.assertIsNotNone(plant.annual)
+        self.assertTrue(type(plant) == Plant)
+        self.assertFalse(type(plant) == Garden)
+        self.assertFalse(type(plant) == GardenPlant)
+
 
     def test_seach_for_a_plant(self):
         zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")

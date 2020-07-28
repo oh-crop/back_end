@@ -50,8 +50,7 @@ def get_plant(id):
 # Get a Random Plant
 @api.route('/plants/meet')
 def random_plant():
-    id = Plant.random_id()
-    plant = Plant.get_by_id(id)
+    plant = Plant.random_plant()
     result = {
             'id': plant.id,
             'plant_type': plant.plant_type,

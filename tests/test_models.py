@@ -2,7 +2,10 @@ import unittest
 import os
 import json
 from app import create_app, db
-from app.models import Plant, GardenPlant
+from app.models import Plant, GardenPlant, Garden
+import datetime
+# from datetime import datetime
+from datetime import timedelta
 
 class ModelTestCase(unittest.TestCase):
 
@@ -18,10 +21,20 @@ class ModelTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-    def test_it_has_a_plant_type(self):
-        plant = Plant(plant_type='Celery')
-        self.assertTrue(plant.plant_type == 'Celery')
-        self.assertTrue(plant.plant_type != 'Corn')
+# Plant Model Tests
+
+    def test_a_plant_has_attributes(self):
+        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
+        db.session.add_all([agatha])
+        db.session.commit()
+        self.assertTrue(type(agatha.id) is int)
+        self.assertEqual(agatha.plant_type, 'Roma Tomato')
+        self.assertEqual(agatha.image, 'agatha_photo.jpg')
+        self.assertEqual(agatha.lighting, 'Full Sun')
+        self.assertEqual(agatha.water_frequency, 2)
+        self.assertEqual(agatha.harvest_time, 60)
+        self.assertEqual(agatha.root_depth, 12)
+        self.assertEqual(agatha.annual, "Annual")
 
     def test_it_can_retrieve_all_plants(self):
         zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
@@ -77,7 +90,39 @@ class ModelTestCase(unittest.TestCase):
         self.assertNotEqual(zeke.id, cactus_dan.id)
         self.assertNotEqual(agatha.id, cactus_dan.id)
 
-    def test_it_has_a_gardenplant(self):
-        plant = Plant(plant_type='Celery')
-        garden_plant = GardenPlant(plant_id=plant.id)
-        self.assertTrue(garden_plant.plant_id == plant.id)
+# Garden Plant Model Tests
+    def test_a_gardenplant_has_attributes(self):
+        date = datetime.date(2013,1,1)
+        garden_plant = GardenPlant(plant_id=1,garden_id=2,plant_name="Wile E. Coyote",last_watered=date,date_added=date,harvest_date=date)
+
+        self.assertEqual(garden_plant.plant_id, 1)
+        self.assertEqual(garden_plant.garden_id, 2)
+        self.assertEqual(garden_plant.plant_name, "Wile E. Coyote")
+        self.assertEqual(garden_plant.last_watered, date)
+        self.assertEqual(garden_plant.date_added, date)
+        self.assertEqual(garden_plant.harvest_date, date)
+
+    def test_it_can_get_a_gardenplant_by_id(self):
+        tom_garden_plant = GardenPlant(plant_name="Tom")
+        jerry_garden_plant = GardenPlant(plant_name="Jerry")
+        db.session.add_all([tom_garden_plant, jerry_garden_plant])
+        db.session.commit()
+
+        garden_plant_obj = GardenPlant.get_by_id(tom_garden_plant.id)
+
+        self.assertEqual(garden_plant_obj.id, tom_garden_plant.id)
+        self.assertEqual(garden_plant_obj.plant_name, "Tom")
+        self.assertNotEqual(garden_plant_obj.id, jerry_garden_plant.id)
+        self.assertNotEqual(garden_plant_obj.plant_name, "Jerry")
+
+    def test_it_can_format_time(self):
+        date = datetime.date(2013,1,1)
+
+        formatted_date_time = GardenPlant.format_time(date)
+        self.assertEqual("Tue, January 01, 2013", formatted_date_time)
+
+# Garden Model Tests
+    def test_a_garden_has_attributes(self):
+        garden = Garden(id=1)
+
+        self.assertTrue(type(garden.id) is int)

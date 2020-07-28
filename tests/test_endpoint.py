@@ -116,6 +116,25 @@ class EndpointTestCase(unittest.TestCase):
         self.assertNotIn(dan.plant_type, json_response)
         self.assertNotIn(dan.image, json_response)
 
+    def test_api_can_search_for_a_plant_is_alphabetical(self):
+        jimmy = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
+        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
+        dan = Plant(plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
+        db.session.add_all([jimmy, agatha, dan])
+        db.session.commit()
+        res = self.client().get('/api/v1/plants/search?q=a')
+        self.assertEqual(res.status_code, 200)
+
+        json_response = json.loads(res.data)
+        # For easier readability, each plant type is listed in order below:
+        # dan.plant_type: 'Cactus'
+        # jimmy.plant_type: 'Cherry Tomato'
+        # agatha.plant_type: 'Roma Tomato'
+
+        self.assertEqual(dan.plant_type, json_response[0]['plant_type'])
+        self.assertEqual(jimmy.plant_type, json_response[1]['plant_type'])
+        self.assertEqual(agatha.plant_type, json_response[2]['plant_type'])
+
     def test_api_can_search_for_a_plant_type_sad_path(self):
         jimmy = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
         agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")

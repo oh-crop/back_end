@@ -3,8 +3,7 @@ import os
 import json
 from app import create_app, db
 from app.models import Plant, Garden, GardenPlant
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 import logging
 import sys
 

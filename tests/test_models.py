@@ -3,9 +3,8 @@ import os
 import json
 from app import create_app, db
 from app.models import Plant, GardenPlant, Garden
-import datetime
-# from datetime import datetime
 from datetime import timedelta
+import datetime
 
 class ModelTestCase(unittest.TestCase):
 

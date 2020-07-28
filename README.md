@@ -1,4 +1,8 @@
 ![OH Crop Logo](https://user-images.githubusercontent.com/55028065/88461332-c5903a00-ce5f-11ea-8496-d12187350486.png)
+[![Build Status](https://travis-ci.org/oh-crop/back_end.png?branch=main)](https://travis-ci.com/github/oh-crop/back_end)
+[![HitCount](http://hits.dwyl.com/oh-crop/back_end.svg)](http://hits.dwyl.com/oh-crop/back_end)
+[![Python 3.8.4](https://img.shields.io/badge/python-3.8.4-blue.svg)](https://www.python.org/downloads/release/python-384/)
+![Func](https://img.shields.io/badge/func%20imported-true-brightgreen)
 
 ## Contents
 - [About](#about)

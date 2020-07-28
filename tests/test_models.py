@@ -72,6 +72,12 @@ class ModelTestCase(unittest.TestCase):
 
         ids = [zeke.id, dan.id, agatha.id]
         self.assertIn(plant.id, ids)
+        self.assertIsNotNone(plant.plant_type)
+        self.assertIsNotNone(plant.image)
+        self.assertIsNotNone(plant.lighting)
+        self.assertIsNotNone(plant.water_frequency)
+        self.assertIsNotNone(plant.root_depth)
+        self.assertIsNotNone(plant.annual)
         self.assertTrue(type(plant) == Plant)
         self.assertFalse(type(plant) == Garden)
         self.assertFalse(type(plant) == GardenPlant)

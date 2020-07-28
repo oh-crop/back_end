@@ -49,10 +49,10 @@ def random_plant():
     id = Plant.random_id()
     plant = Plant.get_by_id(id)
     result = {
-                'id': plant.id,
-                'plant_type': plant.plant_type,
-                'plant_image': plant.image
-                }
+            'id': plant.id,
+            'plant_type': plant.plant_type,
+            'plant_image': plant.image
+            }
     response = jsonify(result)
     response.status_code = 200
     return response
@@ -76,7 +76,7 @@ def search_plants():
                 'id': plant.id,
                 'plant_type': plant.plant_type,
                 'plant_image': plant.image,
-            }
+                }
             results.append(obj)
 
     response = jsonify(results)
@@ -105,12 +105,12 @@ def add_to_garden():
 
 
     result = {
-    'garden_plant_id': garden_plant.id,
-    'plant_id': garden_plant.plant_id,
-    'garden_id':garden_plant.garden_id,
-    'plant_name': plant_name,
-    'harvest_date': formatted_harvest_date
-    }
+            'garden_plant_id': garden_plant.id,
+            'plant_id': garden_plant.plant_id,
+            'garden_id':garden_plant.garden_id,
+            'plant_name': plant_name,
+            'harvest_date': formatted_harvest_date
+            }
     response = jsonify(result)
     response.status_code = 201
 
@@ -205,9 +205,9 @@ def get_gardenplant(id):
         request.method == 'DELETE'
         gardenplant = GardenPlant.get_by_id(id)
         result = {
-            'gardenplant_id': gardenplant.id,
-            'plant_name': gardenplant.plant_name,
-        }
+                    'gardenplant_id': gardenplant.id,
+                    'plant_name': gardenplant.plant_name,
+                }
         db.session.delete(gardenplant)
         db.session.commit()
         response = jsonify(result)

@@ -1,16 +1,17 @@
 from flask import jsonify, request, current_app, url_for
-from . import api
 from ..models import Plant, Garden, GardenPlant
+from datetime import timedelta, datetime
 from flask_sqlalchemy import SQLAlchemy
 from app import db
+from . import api
 import code
-from datetime import datetime
-from datetime import timedelta
-
+# Base endpoint test used when testing deployment.
+# Also used later as a motivational message.
 @api.route('/')
 def endpoint():
     return "I need to go take a shower so I can't tell if I'm crying or not."
 
+# Get All Plants
 @api.route('/plants/')
 def all_plants():
     plants = Plant.get_all()
@@ -27,23 +28,26 @@ def all_plants():
     response.status_code = 200
     return response
 
+# Get Plant by ID
 @api.route('/plants/<int:id>')
 def get_plant(id):
     plant = Plant.get_by_id(id)
     result = {
-                'id': plant.id,
-                'plant_type': plant.plant_type,
-                'plant_image': plant.image,
-                'lighting': plant.lighting,
-                'days_between_water': plant.water_frequency,
-                'days_to_harvest_from_seed': plant.harvest_time,
-                'root_depth_in': plant.root_depth,
-                'lifecycle': plant.annual
-                }
+            'id': plant.id,
+            'plant_type': plant.plant_type,
+            'plant_image': plant.image,
+            'lighting': plant.lighting,
+            'days_between_water': plant.water_frequency,
+            'days_to_harvest_from_seed': plant.harvest_time,
+            'root_depth_in': plant.root_depth,
+            'lifecycle': plant.annual
+        }
+
     response = jsonify(result)
     response.status_code = 200
     return response
 
+# Get a Random Plant
 @api.route('/plants/meet')
 def random_plant():
     id = Plant.random_id()
@@ -52,11 +56,13 @@ def random_plant():
             'id': plant.id,
             'plant_type': plant.plant_type,
             'plant_image': plant.image
-            }
+        }
+
     response = jsonify(result)
     response.status_code = 200
     return response
 
+# Get Plant by Search Keyword
 @api.route('/plants/search')
 def search_plants():
     search = request.args['q']
@@ -64,11 +70,11 @@ def search_plants():
 
     if len(plants) == 0:
         results = [
-            {
-            'plant_image': 'https://images.unsplash.com/reserve/unsplash_529f1a3f2f5ed_1.JPG',
-            'plant_type': 'Oh Crop!  We did not find any plants called {}.  Maybe try a different search term?'.format(search)
-            }
-        ]
+                {
+                'plant_image': 'https://images.unsplash.com/reserve/unsplash_529f1a3f2f5ed_1.JPG',
+                'plant_type': 'Oh Crop!  We did not find any plants called {}.  Maybe try a different search term?'.format(search)
+                }
+            ]
     else:
         results = []
         for plant in plants:
@@ -76,13 +82,42 @@ def search_plants():
                 'id': plant.id,
                 'plant_type': plant.plant_type,
                 'plant_image': plant.image,
-                }
+            }
             results.append(obj)
 
     response = jsonify(results)
     response.status_code = 200
     return response
 
+# Get All Plants in Garden (Get All Garden Plants)
+@api.route('/garden')
+def get_garden():
+    garden = Garden.current_garden()
+    gardenplants = garden.gardenplants
+
+    if len(gardenplants) == 0:
+        results = {
+                'info': 'You have no plants in your garden'
+            }
+
+        response = jsonify(results)
+        response.status_code = 200
+        return response
+    else:
+        results = []
+
+        for plant in gardenplants:
+            obj = {
+                'id': plant.id,
+                'plant_name': plant.plant_name,
+            }
+            results.append(obj)
+
+        response = jsonify(results)
+        response.status_code = 200
+        return response
+
+# Post New Plant To Garden
 @api.route('/garden', methods=['POST'])
 def add_to_garden():
     plant_id = request.args['plant_id']
@@ -98,11 +133,13 @@ def add_to_garden():
         harvest_date = None
         formatted_harvest_date = 'N/A'
 
-
-    garden_plant = GardenPlant(plant_id=plant_id,plant_name=plant_name, last_watered = datetime.now(), harvest_date=harvest_date, garden_id=garden.id)
+    garden_plant = GardenPlant(plant_id=plant_id,
+                               plant_name=plant_name,
+                               last_watered = datetime.now(),
+                               harvest_date=harvest_date,
+                               garden_id=garden.id)
     db.session.add_all([garden_plant])
     db.session.commit()
-
 
     result = {
             'garden_plant_id': garden_plant.id,
@@ -110,37 +147,14 @@ def add_to_garden():
             'garden_id':garden_plant.garden_id,
             'plant_name': plant_name,
             'harvest_date': formatted_harvest_date
-            }
+        }
+
     response = jsonify(result)
     response.status_code = 201
 
     return response
 
-@api.route('/garden')
-def get_garden():
-    garden = Garden.current_garden()
-    gardenplants = garden.gardenplants
-
-    if len(gardenplants) == 0:
-        results = {
-            'info': 'You have no plants in your garden'
-        }
-        response = jsonify(results)
-        response.status_code = 200
-        return response
-    else:
-        results = []
-
-        for plant in gardenplants:
-            obj = {
-                'id': plant.id,
-                'plant_name': plant.plant_name,
-            }
-            results.append(obj)
-        response = jsonify(results)
-        response.status_code = 200
-        return response
-
+# Water a garden plant
 @api.route('/garden/water', methods=['PUT'])
 def update_watering():
     garden_plant_id = request.args['garden_plant_id']
@@ -155,17 +169,19 @@ def update_watering():
     last_water = GardenPlant.format_time(garden_plant.last_watered)
 
     results = {
-        'id': garden_plant.id,
-        'name': garden_plant.plant_name,
-        'plant_type': garden_plant.plant.plant_type,
-        'water_frequency': freq,
-        'last_watered': last_water,
-        'next_water': next_water
-    }
+            'id': garden_plant.id,
+            'name': garden_plant.plant_name,
+            'plant_type': garden_plant.plant.plant_type,
+            'water_frequency': freq,
+            'last_watered': last_water,
+            'next_water': next_water
+        }
+
     response = jsonify(results)
     response.status_code = 201
     return response
 
+# Garden Plant Profile and Delete Garden Plant from Garden
 @api.route('garden/plants/<int:id>', methods=['GET', 'DELETE'])
 def get_gardenplant(id):
     if request.method == 'GET':
@@ -187,16 +203,17 @@ def get_gardenplant(id):
         formatted_last_watered = GardenPlant.format_time(gardenplant.last_watered)
 
         result = {
-            'gardenplant_id': gardenplant.id,
-            'plant_name': gardenplant.plant_name,
-            'date_added': formatted_date_added,
-            'last_watered': formatted_last_watered,
-            'harvest_date': formatted_harvest_date,
-            'days_until_harvest': remaining,
-            'days_until_next_water': days_till_water,
-            'plant_type': gardenplant.plant.plant_type,
-            'image': gardenplant.plant.image
-        }
+                'gardenplant_id': gardenplant.id,
+                'plant_name': gardenplant.plant_name,
+                'date_added': formatted_date_added,
+                'last_watered': formatted_last_watered,
+                'harvest_date': formatted_harvest_date,
+                'days_until_harvest': remaining,
+                'days_until_next_water': days_till_water,
+                'plant_type': gardenplant.plant.plant_type,
+                'image': gardenplant.plant.image
+            }
+
         response = jsonify(result)
         response.status_code = 200
         return response
@@ -205,11 +222,12 @@ def get_gardenplant(id):
         request.method == 'DELETE'
         gardenplant = GardenPlant.get_by_id(id)
         result = {
-                    'gardenplant_id': gardenplant.id,
-                    'plant_name': gardenplant.plant_name,
-                }
+                'gardenplant_id': gardenplant.id,
+                'plant_name': gardenplant.plant_name,
+            }
         db.session.delete(gardenplant)
         db.session.commit()
+
         response = jsonify(result)
         response.status_code = 202
         return response

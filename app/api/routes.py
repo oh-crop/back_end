@@ -159,9 +159,8 @@ def update_watering():
     garden_plant_id = request.args['garden_plant_id']
     garden_plant = GardenPlant.get_by_id(garden_plant_id)
     freq = garden_plant.plant.water_frequency
-    raw_next_water = (datetime.now() + timedelta(days=freq))
+    raw_next_water = (garden_plant.last_watered + timedelta(freq))
     next_water = GardenPlant.format_time(raw_next_water)
-
     garden_plant.last_watered = datetime.now()
     db.session.commit()
 
@@ -195,7 +194,7 @@ def get_gardenplant(id):
             formatted_harvest_date = "N/A"
 
         freq = gardenplant.plant.water_frequency
-        date_of_next_water = today + timedelta(days=freq)
+        date_of_next_water = gardenplant.last_watered + timedelta(freq)
         days_till_water = (date_of_next_water - today).days
 
         formatted_date_added = GardenPlant.format_time(gardenplant.date_added)

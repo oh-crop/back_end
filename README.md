@@ -354,5 +354,11 @@ def test_api_can_add_plant_to_garden_with_no_harvest_date(self):
 
 ## <a name="contributors"></a> Contributors
 
+### Back-End Team
 * [**Mike Hernandez**](https://github.com/mikez321)
 * [**Kelsha Darby**](https://github.com/kelshadarby)
+
+### Front-End Team
+* [**Madison Randle**](https://github.com/madisonrandle)
+* [**Kimala Cochran**](https://github.com/kimalajoy)
+* [**Ryan Camp**](https://github.com/cmpprg)

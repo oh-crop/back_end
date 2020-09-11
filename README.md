@@ -17,8 +17,9 @@
 - [Contributors](#contributors)
 
 ## <a name="about"></a> About
+Oh Crop! Back-End is an API built using Python and Flask. This API was created to send plant information to the Oh Crop! front end (written in React Native) via RESTful endpoints. You can view the front end repository [here](https://github.com/oh-crop/frontEnd). This API uses a PostgreSQL database and has full CRUD functionality for adding plants into gardens. It was built following TDD and agile processes over a period of 14 days, you can view the project board [here](https://github.com/orgs/oh-crop/projects/2).
 
-Oh Crop! Back-End is an API built using Python and Flask. This API was created to send plant information to the Oh Crop! front end (written in React Native) via RESTful endpoints. You can view the front end repository [here](https://github.com/oh-crop/frontEnd). This API uses a PostgreSQL database and has full CRUD functionality for adding plants into gardens. It was built following TDD and agile processes over a period of 14 days, you can view the peroject board [here](https://github.com/orgs/oh-crop/projects/2).
+Click [here](https://www.youtube.com/watch?v=3uIJzFKl3ew&feature=youtu.be) to see the application in use!
 
 ### <a name="prerequisites"></a> Prerequisites
 

@@ -8,9 +8,8 @@ import logging
 import sys
 
 
-
 class EndpointTestCase(unittest.TestCase):
-    """This class represents the test case"""
+    """Endpoint tests."""
 
     def setUp(self):
         """Define test variables and initialize app."""
@@ -21,11 +20,11 @@ class EndpointTestCase(unittest.TestCase):
         db.create_all()
 
     def tearDown(self):
+        """Reset for next round of testing."""
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
 
-# Motivational Message Endpoint Test
     def test_api_can_get_welcome_endpoint(self):
         """Test API can get a dummy string (GET request)."""
         res = self.client().get('/api/v1/')
@@ -35,9 +34,27 @@ class EndpointTestCase(unittest.TestCase):
 # Plant Endpoint Tests
     # Plant GET Requests
     def test_api_can_return_all_plants(self):
-        zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
-        dan = Plant(plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
-        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
+        zeke = Plant(plant_type='Cherry Tomato',
+                     image='jim_photo.jpg',
+                     lighting='Full Sun',
+                     water_frequency=3,
+                     harvest_time=50,
+                     root_depth=12,
+                     annual="Annual")
+        dan = Plant(plant_type='Cactus',
+                    image='cactus_dan.jpg',
+                    lighting='Full Sun',
+                    water_frequency=7,
+                    harvest_time=None,
+                    root_depth=8,
+                    annual="Annual")
+        agatha = Plant(plant_type='Roma Tomato',
+                       image='agatha_photo.jpg',
+                       lighting='Full Sun',
+                       water_frequency=2,
+                       harvest_time=60,
+                       root_depth=12,
+                       annual="Annual")
         db.session.add_all([zeke, dan, agatha])
         db.session.commit()
 
@@ -56,9 +73,27 @@ class EndpointTestCase(unittest.TestCase):
         self.assertEqual(agatha.image, json_response[2]['image'])
 
     def test_api_can_return_a_random_plant(self):
-        zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
-        dan = Plant(plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
-        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
+        zeke = Plant(plant_type='Cherry Tomato',
+                     image='jim_photo.jpg',
+                     lighting='Full Sun',
+                     water_frequency=3,
+                     harvest_time=50,
+                     root_depth=12,
+                     annual="Annual")
+        dan = Plant(plant_type='Cactus',
+                    image='cactus_dan.jpg',
+                    lighting='Full Sun',
+                    water_frequency=7,
+                    harvest_time=None,
+                    root_depth=8,
+                    annual="Annual")
+        agatha = Plant(plant_type='Roma Tomato',
+                       image='agatha_photo.jpg',
+                       lighting='Full Sun',
+                       water_frequency=2,
+                       harvest_time=60,
+                       root_depth=12,
+                       annual="Annual")
         db.session.add_all([zeke, dan, agatha])
         db.session.commit()
 

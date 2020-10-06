@@ -7,13 +7,17 @@ from . import api
 import code
 # Base endpoint test used when testing deployment.
 # Also used later as a motivational message.
+
+
 @api.route('/')
 def endpoint():
+    """Return a simple motivational message when app is deployed."""
     return "I need to go take a shower so I can't tell if I'm crying or not."
 
-# Get All Plants
+
 @api.route('/plants/')
 def all_plants():
+    """Return all plant objects."""
     plants = Plant.get_all()
     results = []
 
@@ -28,9 +32,16 @@ def all_plants():
     response.status_code = 200
     return response
 
-# Get Plant by ID
+
 @api.route('/plants/<int:id>')
 def get_plant(id):
+    """
+    Return a given plant when given its ID.
+
+    :param id: The ID of the plant will be passed in as an int.
+    :return: A JSON response will be generated including a status code of 200
+        if a plant is found with the given ID.
+    """
     plant = Plant.get_by_id(id)
     result = {
             'id': plant.id,
@@ -47,9 +58,10 @@ def get_plant(id):
     response.status_code = 200
     return response
 
-# Get a Random Plant
+
 @api.route('/plants/meet')
 def random_plant():
+    """Return a random plant from the database."""
     plant = Plant.random_plant()
     result = {
             'id': plant.id,
@@ -61,19 +73,27 @@ def random_plant():
     response.status_code = 200
     return response
 
-# Get Plant by Search Keyword
+
 @api.route('/plants/search')
 def search_plants():
+    """
+    Return a plant from the database based on search criteria.
+
+    This request will be sent in with search params which will then be passed
+        into the plant_search() method.
+    """
     search = request.args['q']
     plants = Plant.plant_search(search)
 
     if len(plants) == 0:
         results = [
-                {
-                'plant_image': 'https://images.unsplash.com/reserve/unsplash_529f1a3f2f5ed_1.JPG',
-                'plant_type': 'Oh Crop!  We did not find any plants called {}.  Maybe try a different search term?'.format(search)
-                }
-            ]
+            {'plant_image':
+                'https://'
+                'images.unsplash.com/reserve/unsplash_529f1a3f2f5ed_1.JPG',
+             'plant_type':
+                'Oh Crop!  We did not find any plants called {}.  '
+                'Maybe try a different search term?'.format(search)}
+        ]
     else:
         results = []
         for plant in plants:

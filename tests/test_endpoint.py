@@ -32,8 +32,8 @@ class EndpointTestCase(unittest.TestCase):
         self.assertIn("I need to go take a shower so I can't tell if I'm crying or not.", str(res.data))
 
 # Plant Endpoint Tests
-    # Plant GET Requests
     def test_api_can_return_all_plants(self):
+        """GET request to return all plants in the DB."""
         zeke = Plant(plant_type='Cherry Tomato',
                      image='jim_photo.jpg',
                      lighting='Full Sun',
@@ -73,6 +73,7 @@ class EndpointTestCase(unittest.TestCase):
         self.assertEqual(agatha.image, json_response[2]['image'])
 
     def test_api_can_return_a_random_plant(self):
+        """GET request to return a ranom plant from the DB."""
         zeke = Plant(plant_type='Cherry Tomato',
                      image='jim_photo.jpg',
                      lighting='Full Sun',
@@ -107,6 +108,7 @@ class EndpointTestCase(unittest.TestCase):
         self.assertIsNotNone(json_response['plant_image'])
 
     def test_api_can_return_a_plant_by_id(self):
+        """GET request to return a single plant by its ID."""
         jimmy = Plant(plant_type='Cherry Tomato',
                       image='jim_photo.jpg',
                       lighting='Full Sun',
@@ -140,6 +142,7 @@ class EndpointTestCase(unittest.TestCase):
         self.assertEqual(jimmy.annual, json_response['lifecycle'])
 
     def test_api_can_search_for_a_plant_type(self):
+        """GET request to return plants with keyword search."""
         jimmy = Plant(plant_type='Cherry Tomato',
                       image='jim_photo.jpg',
                       lighting='Full Sun',
@@ -182,6 +185,7 @@ class EndpointTestCase(unittest.TestCase):
         self.assertNotIn(dan.image, json_response)
 
     def test_api_can_search_for_a_plant_is_alphabetical(self):
+        """Plant search comes back in alphabetical order."""
         jimmy = Plant(plant_type='Cherry Tomato',
                       image='jim_photo.jpg',
                       lighting='Full Sun',
@@ -219,6 +223,7 @@ class EndpointTestCase(unittest.TestCase):
         self.assertEqual(agatha.plant_type, json_response[2]['plant_type'])
 
     def test_api_can_search_for_a_plant_type_sad_path(self):
+        """Sad path testing for plant search."""
         jimmy = Plant(plant_type='Cherry Tomato',
                       image='jim_photo.jpg',
                       lighting='Full Sun',
@@ -265,8 +270,16 @@ class EndpointTestCase(unittest.TestCase):
         self.assertNotIn(dan.image, json_response)
 
 # Garden Plant Endpoint Tests
-    # Garden Plant GET Requests
     def test_api_can_return_msg_when_no_plants_are_in_garden(self):
+        """
+        Sad path test for returning garden plants.
+
+        Garden plants are plants in the DB that have been assigned to a garden.
+            Many gardens can have many plants through gardenplants. Garden
+            plants not only hold a foreign key of a plant and a garden, but
+            also specific information about planting and watering of that
+            particular plant in that particular garden.
+        """
         garden = Garden(id=1)
         zeke = Plant(plant_type='Cherry Tomato',
                      image='jim_photo.jpg',
@@ -300,6 +313,7 @@ class EndpointTestCase(unittest.TestCase):
         self.assertEqual('You have no plants in your garden', json_response['info'])
 
     def test_api_can_return_all_plants_in_garden(self):
+        """GET request for returning all gardenplants."""
         garden = Garden(id=1)
         zeke = Plant(plant_type='Cherry Tomato',
                      image='jim_photo.jpg',
@@ -343,8 +357,8 @@ class EndpointTestCase(unittest.TestCase):
         self.assertNotEqual(agatha.id, json_response[0]['id'])
         self.assertNotEqual(agatha.id, json_response[1]['id'])
 
-
     def test_api_can_return_garden_plant_profile_page(self):
+        """GET request for gardenplant by ID (profile page)."""
         garden = Garden(id=1)
         adrian = Plant(id=5,
                        plant_type='Buckcherry',
@@ -381,6 +395,7 @@ class EndpointTestCase(unittest.TestCase):
         self.assertIsNotNone(profile_json_response['days_until_next_water'])
 
     def test_api_can_return_garden_plant_profile_page_with_no_harvest_date(self):
+        """Sad path test for returning a plant with no harvest date."""
         garden = Garden(id=1)
         adrian = Plant(id=5,
                        plant_type='Buckcherry',
@@ -414,8 +429,8 @@ class EndpointTestCase(unittest.TestCase):
         self.assertEqual(adrian.image, profile_json_response['image'])
         self.assertIsNotNone(profile_json_response['days_until_next_water'])
 
-    # Garden Plant POST Requests
     def test_api_can_add_plant_to_garden(self):
+        """POST request for adding a plant to a garden."""
         garden = Garden(id=1)
         zeke = Plant(plant_type='Cherry Tomato',
                      image='jim_photo.jpg',
@@ -458,6 +473,7 @@ class EndpointTestCase(unittest.TestCase):
         self.assertNotEqual(dan.id, json_response['plant_id'])
 
     def test_api_can_add_plant_to_garden_with_no_harvest_date(self):
+        """Sad path test, plants can be added without harvest date."""
         garden = Garden(id=1)
         zeke = Plant(plant_type='Cherry Tomato',
                      image='jim_photo.jpg',
@@ -489,8 +505,8 @@ class EndpointTestCase(unittest.TestCase):
 
         self.assertNotEqual(zeke.id, json_response['plant_id'])
 
-    # Garden Plant DELETE Requests
     def test_api_can_remove_a_plant_from_a_garden(self):
+        """DELETE request for removing a plant from a garden."""
         garden = Garden(id=1)
         lincoln = Plant(plant_type='Lime',
                         image='lincoln_photo.jpg',
@@ -523,8 +539,8 @@ class EndpointTestCase(unittest.TestCase):
         no_plants_garden_json_response = json.loads(res3.data)
         self.assertEqual("You have no plants in your garden", no_plants_garden_json_response['info'])
 
-    # Garden Plant PUT Requests
     def test_api_can_update_watering_information(self):
+        """PUT request for watering a garden plant."""
         garden = Garden(id=1)
         zeke = Plant(plant_type='Cherry Tomato',
                      image='jim_photo.jpg',
@@ -538,7 +554,8 @@ class EndpointTestCase(unittest.TestCase):
                     image='cactus_dan.jpg',
                     lighting='Full Sun',
                     water_frequency=7,
-                    harvest_time=None,root_depth=8,
+                    harvest_time=None,
+                    root_depth=8,
                     annual="Annual")
         db.session.add_all([zeke, dan, garden])
         db.session.commit()

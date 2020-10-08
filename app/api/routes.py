@@ -4,16 +4,19 @@ from datetime import timedelta, datetime
 from flask_sqlalchemy import SQLAlchemy
 from app import db
 from . import api
-import code
 # Base endpoint test used when testing deployment.
 # Also used later as a motivational message.
+
+
 @api.route('/')
 def endpoint():
+    """Return a simple motivational message when app is deployed."""
     return "I need to go take a shower so I can't tell if I'm crying or not."
 
-# Get All Plants
+
 @api.route('/plants/')
 def all_plants():
+    """Return all plant objects."""
     plants = Plant.get_all()
     results = []
 
@@ -28,9 +31,16 @@ def all_plants():
     response.status_code = 200
     return response
 
-# Get Plant by ID
+
 @api.route('/plants/<int:id>')
 def get_plant(id):
+    """
+    Return a given plant when given its ID.
+
+    :param id: The ID of the plant will be passed in as an int.
+    :return: A JSON response will be generated including a status code of 200
+        if a plant is found with the given ID.
+    """
     plant = Plant.get_by_id(id)
     result = {
             'id': plant.id,
@@ -47,9 +57,10 @@ def get_plant(id):
     response.status_code = 200
     return response
 
-# Get a Random Plant
+
 @api.route('/plants/meet')
 def random_plant():
+    """Return a random plant from the database."""
     plant = Plant.random_plant()
     result = {
             'id': plant.id,
@@ -61,19 +72,30 @@ def random_plant():
     response.status_code = 200
     return response
 
-# Get Plant by Search Keyword
+
 @api.route('/plants/search')
 def search_plants():
+    """
+    Return a plant from the database based on search criteria.
+
+    This request will be sent in with search params which will then be passed
+        into the plant_search() method.  If no plants are found in the search,
+        a message is sent to the user with that information.
+
+    :return: A JSON response with plants found relating to the search.
+    """
     search = request.args['q']
     plants = Plant.plant_search(search)
 
     if len(plants) == 0:
         results = [
-                {
-                'plant_image': 'https://images.unsplash.com/reserve/unsplash_529f1a3f2f5ed_1.JPG',
-                'plant_type': 'Oh Crop!  We did not find any plants called {}.  Maybe try a different search term?'.format(search)
-                }
-            ]
+            {'plant_image':
+                'https://'
+                'images.unsplash.com/reserve/unsplash_529f1a3f2f5ed_1.JPG',
+             'plant_type':
+                'Oh Crop!  We did not find any plants called {}.  '
+                'Maybe try a different search term?'.format(search)}
+        ]
     else:
         results = []
         for plant in plants:
@@ -88,9 +110,17 @@ def search_plants():
     response.status_code = 200
     return response
 
-# Get All Plants in Garden (Get All Garden Plants)
+
 @api.route('/garden')
 def get_garden():
+    """
+    Return all the plants in the current garden (gardenplants).
+
+    If garden has no plants, a message will be displayed saying so.
+
+    :return: JSON response with all plant objects that are in the current
+        garden.
+    """
     garden = Garden.current_garden()
     gardenplants = garden.gardenplants
 
@@ -116,9 +146,21 @@ def get_garden():
         response.status_code = 200
         return response
 
-# Post New Plant To Garden
+
 @api.route('/garden', methods=['POST'])
 def add_to_garden():
+    """
+    Add a plant that exists in the database to the current garden.
+
+    POST request will include query params of plant_id and plant_name.
+        plant_id is the ID of the type of plant in the DB.
+        plant_name is the given name of the plant to identify it in your
+            garden.  (Example: plant_name = 'Travis', plant_id='12' will
+            add whatever plant has ID 12 to the garden and will be called
+            Travis for identification purposes.)
+
+    :return: JSON response with information about the plant added.
+    """
     plant_id = request.args['plant_id']
     plant_name = request.args['plant_name']
     plant = Plant.get_by_id(plant_id)
@@ -134,7 +176,7 @@ def add_to_garden():
 
     garden_plant = GardenPlant(plant_id=plant_id,
                                plant_name=plant_name,
-                               last_watered = datetime.now(),
+                               last_watered=datetime.now(),
                                harvest_date=harvest_date,
                                garden_id=garden.id)
     db.session.add_all([garden_plant])
@@ -143,7 +185,7 @@ def add_to_garden():
     result = {
             'garden_plant_id': garden_plant.id,
             'plant_id': garden_plant.plant_id,
-            'garden_id':garden_plant.garden_id,
+            'garden_id': garden_plant.garden_id,
             'plant_name': plant_name,
             'harvest_date': formatted_harvest_date
         }
@@ -153,9 +195,18 @@ def add_to_garden():
 
     return response
 
-# Water a garden plant
+
 @api.route('/garden/water', methods=['PUT'])
 def update_watering():
+    """
+    Water a gardenplant.
+
+    This request will take a gardenplant ID as a query param and update
+        its watering information.  It will update when the plant was watered
+        and then calculate when it will need to be watered again.
+
+    :return: JSON response including updated watering information on the plant.
+    """
     garden_plant_id = request.args['garden_plant_id']
     garden_plant = GardenPlant.get_by_id(garden_plant_id)
     freq = garden_plant.plant.water_frequency
@@ -179,16 +230,26 @@ def update_watering():
     response.status_code = 201
     return response
 
-# Garden Plant Profile and Delete Garden Plant from Garden
+
 @api.route('garden/plants/<int:id>', methods=['GET', 'DELETE'])
 def get_gardenplant(id):
+    """
+    Get information about a plant or delete it from the garden.
+
+    GET request will return profile information about the plant.
+    :return: JSON response with all important plant profile info.
+
+    DELETE request will remove the gardenplant from the current garden.
+    :return: JSON response with ID and name of removed plant.
+    """
     if request.method == 'GET':
         gardenplant = GardenPlant.get_by_id(id)
         today = datetime.now()
         if gardenplant.plant.harvest_time:
             harvest = gardenplant.harvest_date
             remaining = (harvest - today).days
-            formatted_harvest_date = GardenPlant.format_time(gardenplant.harvest_date)
+            formatted_harvest_date = GardenPlant.format_time(
+                gardenplant.harvest_date)
         else:
             remaining = "N/A"
             formatted_harvest_date = "N/A"
@@ -198,7 +259,8 @@ def get_gardenplant(id):
         days_till_water = (date_of_next_water - today).days
 
         formatted_date_added = GardenPlant.format_time(gardenplant.date_added)
-        formatted_last_watered = GardenPlant.format_time(gardenplant.last_watered)
+        formatted_last_watered = GardenPlant.format_time(
+            gardenplant.last_watered)
 
         result = {
                 'gardenplant_id': gardenplant.id,

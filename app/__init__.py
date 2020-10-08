@@ -1,3 +1,4 @@
+"""Initialize App."""
 import os
 from flask_cors import CORS
 from flask_api import FlaskAPI
@@ -12,6 +13,7 @@ db = SQLAlchemy()
 
 
 def create_app(config_name):
+    """Pull in config settings and set up blueprint for routes."""
     app = FlaskAPI(__name__, instance_relative_config=True)
     app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')

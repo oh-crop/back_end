@@ -6,9 +6,12 @@ from app.models import Plant, GardenPlant, Garden
 from datetime import timedelta
 import datetime
 
+
 class ModelTestCase(unittest.TestCase):
+    """Model tests."""
 
     def setUp(self):
+        """Define test variables and initialize app."""
         self.app = create_app(config_name="testing")
         self.client = self.app.test_client
         self.app_context = self.app.app_context()
@@ -16,14 +19,21 @@ class ModelTestCase(unittest.TestCase):
         db.create_all()
 
     def tearDown(self):
+        """Reset for next round of testing."""
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
 
 # Plant Model Tests
-
     def test_a_plant_has_attributes(self):
-        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
+        """Test plant model attributes."""
+        agatha = Plant(plant_type='Roma Tomato',
+                       image='agatha_photo.jpg',
+                       lighting='Full Sun',
+                       water_frequency=2,
+                       harvest_time=60,
+                       root_depth=12,
+                       annual="Annual")
         db.session.add_all([agatha])
         db.session.commit()
         self.assertTrue(type(agatha.id) is int)
@@ -36,9 +46,28 @@ class ModelTestCase(unittest.TestCase):
         self.assertEqual(agatha.annual, "Annual")
 
     def test_it_can_retrieve_all_plants(self):
-        zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
-        dan = Plant(plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
-        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
+        """Plants can look up all plant objects in the DB."""
+        zeke = Plant(plant_type='Cherry Tomato',
+                     image='jim_photo.jpg',
+                     lighting='Full Sun',
+                     water_frequency=3,
+                     harvest_time=50,
+                     root_depth=12,
+                     annual="Annual")
+        dan = Plant(plant_type='Cactus',
+                    image='cactus_dan.jpg',
+                    lighting='Full Sun',
+                    water_frequency=7,
+                    harvest_time=None,
+                    root_depth=8,
+                    annual="Annual")
+        agatha = Plant(plant_type='Roma Tomato',
+                       image='agatha_photo.jpg',
+                       lighting='Full Sun',
+                       water_frequency=2,
+                       harvest_time=60,
+                       root_depth=12,
+                       annual="Annual")
         db.session.add_all([zeke, dan, agatha])
         db.session.commit()
 
@@ -49,9 +78,28 @@ class ModelTestCase(unittest.TestCase):
         self.assertIn(agatha, plants)
 
     def test_it_can_get_a_plant_by_id(self):
-        zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
-        dan = Plant(plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
-        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
+        """Plant model can return a plant by its ID."""
+        zeke = Plant(plant_type='Cherry Tomato',
+                     image='jim_photo.jpg',
+                     lighting='Full Sun',
+                     water_frequency=3,
+                     harvest_time=50,
+                     root_depth=12,
+                     annual="Annual")
+        dan = Plant(plant_type='Cactus',
+                    image='cactus_dan.jpg',
+                    lighting='Full Sun',
+                    water_frequency=7,
+                    harvest_time=None,
+                    root_depth=8,
+                    annual="Annual")
+        agatha = Plant(plant_type='Roma Tomato',
+                       image='agatha_photo.jpg',
+                       lighting='Full Sun',
+                       water_frequency=2,
+                       harvest_time=60,
+                       root_depth=12,
+                       annual="Annual")
         db.session.add_all([zeke, dan, agatha])
         db.session.commit()
 
@@ -62,9 +110,28 @@ class ModelTestCase(unittest.TestCase):
         self.assertNotEqual(agatha.id, plant.id)
 
     def test_a_plant_can_get_a_random_plant(self):
-        zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
-        dan = Plant(plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
-        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
+        """Plant model can return a random plant in the DB."""
+        zeke = Plant(plant_type='Cherry Tomato',
+                     image='jim_photo.jpg',
+                     lighting='Full Sun',
+                     water_frequency=3,
+                     harvest_time=50,
+                     root_depth=12,
+                     annual="Annual")
+        dan = Plant(plant_type='Cactus',
+                    image='cactus_dan.jpg',
+                    lighting='Full Sun',
+                    water_frequency=7,
+                    harvest_time=None,
+                    root_depth=8,
+                    annual="Annual")
+        agatha = Plant(plant_type='Roma Tomato',
+                       image='agatha_photo.jpg',
+                       lighting='Full Sun',
+                       water_frequency=2,
+                       harvest_time=60,
+                       root_depth=12,
+                       annual="Annual")
         db.session.add_all([zeke, dan, agatha])
         db.session.commit()
 
@@ -82,11 +149,29 @@ class ModelTestCase(unittest.TestCase):
         self.assertFalse(type(plant) == Garden)
         self.assertFalse(type(plant) == GardenPlant)
 
-
     def test_seach_for_a_plant(self):
-        zeke = Plant(plant_type='Cherry Tomato',image='jim_photo.jpg',lighting='Full Sun',water_frequency=3,harvest_time=50,root_depth=12,annual="Annual")
-        dan = Plant(plant_type='Cactus',image='cactus_dan.jpg',lighting='Full Sun',water_frequency=7,harvest_time=None,root_depth=8,annual="Annual")
-        agatha = Plant(plant_type='Roma Tomato',image='agatha_photo.jpg',lighting='Full Sun',water_frequency=2,harvest_time=60,root_depth=12,annual="Annual")
+        """Plant model can search for plants with a keyword."""
+        zeke = Plant(plant_type='Cherry Tomato',
+                     image='jim_photo.jpg',
+                     lighting='Full Sun',
+                     water_frequency=3,
+                     harvest_time=50,
+                     root_depth=12,
+                     annual="Annual")
+        dan = Plant(plant_type='Cactus',
+                    image='cactus_dan.jpg',
+                    lighting='Full Sun',
+                    water_frequency=7,
+                    harvest_time=None,
+                    root_depth=8,
+                    annual="Annual")
+        agatha = Plant(plant_type='Roma Tomato',
+                       image='agatha_photo.jpg',
+                       lighting='Full Sun',
+                       water_frequency=2,
+                       harvest_time=60,
+                       root_depth=12,
+                       annual="Annual")
         db.session.add_all([zeke, dan, agatha])
         db.session.commit()
 
@@ -101,8 +186,14 @@ class ModelTestCase(unittest.TestCase):
 
 # Garden Plant Model Tests
     def test_a_gardenplant_has_attributes(self):
-        date = datetime.date(2013,1,1)
-        garden_plant = GardenPlant(plant_id=1,garden_id=2,plant_name="Wile E. Coyote",last_watered=date,date_added=date,harvest_date=date)
+        """GardenPlant model has attributes."""
+        date = datetime.date(2013, 1, 1)
+        garden_plant = GardenPlant(plant_id=1,
+                                   garden_id=2,
+                                   plant_name="Wile E. Coyote",
+                                   last_watered=date,
+                                   date_added=date,
+                                   harvest_date=date)
 
         self.assertEqual(garden_plant.plant_id, 1)
         self.assertEqual(garden_plant.garden_id, 2)
@@ -112,6 +203,7 @@ class ModelTestCase(unittest.TestCase):
         self.assertEqual(garden_plant.harvest_date, date)
 
     def test_it_can_get_a_gardenplant_by_id(self):
+        """GardenPlant model can return gardenplants by ID."""
         tom_garden_plant = GardenPlant(plant_name="Tom")
         jerry_garden_plant = GardenPlant(plant_name="Jerry")
         db.session.add_all([tom_garden_plant, jerry_garden_plant])
@@ -125,13 +217,15 @@ class ModelTestCase(unittest.TestCase):
         self.assertNotEqual(garden_plant_obj.plant_name, "Jerry")
 
     def test_it_can_format_time(self):
-        date = datetime.date(2013,1,1)
+        """GardenPlants can format time."""
+        date = datetime.date(2013, 1, 1)
 
         formatted_date_time = GardenPlant.format_time(date)
         self.assertEqual("Tue, January 01, 2013", formatted_date_time)
 
 # Garden Model Tests
     def test_a_garden_has_attributes(self):
+        """Garden model has attributes."""
         garden = Garden(id=1)
 
         self.assertTrue(type(garden.id) is int)
